@@ -1,0 +1,36 @@
+name: Mise a jour quotidienne des cotes
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # tous les jours a 06:00 UTC
+  workflow_dispatch: {}     # permet de lancer manuellement depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dependances
+        run: pip install -r requirements.txt
+
+      - name: Lancer le script de mise a jour
+        env:
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+        run: python update_prices.py
+
+      - name: Commit et push prices.json
+        run: |
+          git config user.name "card-tracker-bot"
+          git config user.email "actions@github.com"
+          git add prices.json
+          git diff --cached --quiet || git commit -m "Mise a jour des cotes ($(date -u +%Y-%m-%d))"
+          git push
