@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ma cote</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #101018;
+    color: #F1F1F4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .eyebrow { font-size: 11px; letter-spacing: 0.12em; color: #6E7086; margin: 0; font-weight: 600; }
+  h1 { font-size: 28px; font-weight: 700; margin: 2px 0 4px; letter-spacing: -0.02em; }
+  .sync-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: transparent; border: none; color: #6E7086;
+    font-size: 11px; padding: 0; cursor: pointer; margin-bottom: 14px;
+    font-family: inherit;
+  }
+  .sync-btn svg { animation: none; }
+  .sync-btn.spinning svg { animation: spin 1s linear infinite; }
+  .sync-error { font-size: 11px; color: #F26D6D; margin: 4px 0 14px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+  .tab {
+    padding: 6px 14px; border-radius: 999px; border: 1px solid #26283A;
+    background: transparent; color: #9A9CB0; font-size: 13px; cursor: pointer;
+    font-family: inherit;
+  }
+  .tab.active { background: #1D1F2E; color: #F1F1F4; border-color: #3A3D56; }
+
+  .hero {
+    background: linear-gradient(160deg, #171826, #12131C);
+    border: 1px solid #22243450;
+    border-radius: 20px;
+    padding: 24px 20px;
+    margin-bottom: 24px;
+  }
+  .hero-label { font-size: 13px; color: #8A8CA0; margin: 0; }
+  .hero-value {
+    font-size: 42px; font-weight: 800; letter-spacing: -0.03em;
+    margin: 4px 0 6px;
+    font-family: 'SF Mono', 'IBM Plex Mono', monospace;
+    background-image: linear-gradient(90deg, #7DD3FC, #C084FC, #FDE68A, #7DD3FC);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    animation: holoShift 6s linear infinite;
+  }
+  .hero-change { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+
+  .alloc-row { margin-bottom: 12px; }
+  .alloc-label-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .alloc-bar-bg { height: 5px; border-radius: 999px; background: #22243A; }
+  .alloc-bar-fill { height: 100%; border-radius: 999px; }
+
+  .list-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .section-label { font-size: 13px; color: #8A8CA0; margin: 0; font-weight: 600; }
+
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    background: #171826; border: 1px solid #22243450; border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .game-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+  .row-info { flex: 1 1 auto; min-width: 0; }
+  .row-name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-meta { font-size: 12px; color: #7B7D92; margin-top: 2px; }
+  .row-price-col { text-align: right; flex-shrink: 0; }
+  .row-price { font-size: 14px; font-weight: 700; font-family: 'SF Mono', 'IBM Plex Mono', monospace; }
+  .row-change { font-size: 12px; font-weight: 600; }
+  .row-nodata { font-size: 11px; color: #6E7086; font-style: italic; }
+
+  .footnote { font-size: 12px; color: #5C5E72; text-align: center; margin-top: 20px; line-height: 1.5; }
+  .empty { text-align: center; color: #6E7086; font-size: 13px; padding: 30px 0; }
+
+  @keyframes holoShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">COLLECTION</p>
+    <h1>Ma cote</h1>
+    <button class="sync-btn" id="syncBtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      <span id="syncLabel">Chargement...</span>
+    </button>
+    <p class="sync-error" id="syncError" style="display:none"></p>
+
+    <div class="tabs">
+      <button class="tab active" data-filter="all">Tout</button>
+      <button class="tab" data-filter="pokemon">Pokémon</button>
+      <button class="tab" data-filter="onepiece">One Piece</button>
+    </div>
+
+    <section class="hero">
+      <p class="hero-label">Valeur totale</p>
+      <div class="hero-value" id="heroValue">—</div>
+      <div class="hero-change" id="heroChange"></div>
+      <div id="allocation"></div>
+    </section>
+
+    <div class="list-header-row">
+      <p class="section-label" id="listCount">Cartes</p>
+    </div>
+
+    <div class="list" id="cardList"></div>
+
+    <p class="footnote">
+      Données mises à jour automatiquement chaque jour via GitHub Actions (eBay, et bientôt Mercari / SNKR DUNK).
+    </p>
+  </div>
+
+<script>
+  const GAMES = {
+    pokemon: { label: "Pokémon", tint: "#F5C542" },
+    onepiece: { label: "One Piece", tint: "#4CC3E8" },
+  };
+
+  let allCards = [];
+  let filter = "all";
+
+  function fmt(n) {
+    if (n == null) return "—";
+    return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+  }
+
+  function pctChange(history) {
+    const withPrice = (history || []).filter(h => h.price != null);
+    if (withPrice.length < 2) return null;
+    const first = withPrice[0].price, last = withPrice[withPrice.length - 1].price;
+    if (!first) return null;
+    return ((last - first) / first) * 100;
+  }
+
+  function render() {
+    const visible = filter === "all" ? allCards : allCards.filter(c => c.game === filter);
+    const priced = allCards.filter(c => c.price != null);
+    const totalValue = priced.reduce((s, c) => s + c.price * (c.qty || 1), 0);
+    const totalStart = priced.reduce((s, c) => {
+      const withPrice = (c.history || []).filter(h => h.price != null);
+      return s + (withPrice.length ? withPrice[0].price : c.price) * (c.qty || 1);
+    }, 0);
+    const totalChangePct = totalStart ? ((totalValue - totalStart) / totalStart) * 100 : 0;
+
+    document.getElementById("heroValue").textContent = fmt(totalValue);
+    const changeEl = document.getElementById("heroChange");
+    const up = totalChangePct >= 0;
+    changeEl.style.color = up ? "#5FE0A8" : "#F26D6D";
+    changeEl.innerHTML = (up ? "▲ +" : "▼ ") + totalChangePct.toFixed(1) + "% sur la période";
+
+    const byGame = { pokemon: 0, onepiece: 0 };
+    priced.forEach(c => byGame[c.game] += c.price * (c.qty || 1));
+    const allocEl = document.getElementById("allocation");
+    allocEl.innerHTML = Object.entries(GAMES).map(([key, g]) => {
+      const val = byGame[key];
+      const pct = totalValue ? (val / totalValue) * 100 : 0;
+      return `<div class="alloc-row">
+        <div class="alloc-label-row">
+          <span style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:999px;background:${g.tint};display:inline-block"></span>
+            ${g.label}
+          </span>
+          <span style="color:#9A9CB0">${fmt(val)}</span>
+        </div>
+        <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:${pct}%;background:${g.tint}"></div></div>
+      </div>`;
+    }).join("");
+
+    document.getElementById("listCount").textContent = `Cartes (${visible.length})`;
+
+    const listEl = document.getElementById("cardList");
+    if (!visible.length) {
+      listEl.innerHTML = `<div class="empty">Aucune carte dans cette catégorie.</div>`;
+      return;
+    }
+    listEl.innerHTML = visible.map(c => {
+      const change = pctChange(c.history);
+      const hasPrice = c.price != null;
+      const changeUp = change != null && change >= 0;
+      return `<div class="row">
+        <span class="game-dot" style="background:${GAMES[c.game]?.tint || "#666"}"></span>
+        <div class="row-info">
+          <div class="row-name">${c.name}</div>
+          <div class="row-meta">${c.set || ""} · ${c.grade || ""} ${c.qty > 1 ? "· x" + c.qty : ""}</div>
+        </div>
+        <div class="row-price-col">
+          <div class="row-price">${hasPrice ? fmt(c.price * (c.qty || 1)) : "—"}</div>
+          ${hasPrice
+            ? (change != null
+                ? `<div class="row-change" style="color:${changeUp ? "#5FE0A8" : "#F26D6D"}">${changeUp ? "+" : ""}${change.toFixed(1)}%</div>`
+                : `<div class="row-nodata">1er relevé</div>`)
+            : `<div class="row-nodata">en attente</div>`}
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      filter = btn.dataset.filter;
+      render();
+    });
+  });
+
+  async function sync() {
+    const btn = document.getElementById("syncBtn");
+    const label = document.getElementById("syncLabel");
+    const errEl = document.getElementById("syncError");
+    btn.classList.add("spinning");
+    label.textContent = "Synchro...";
+    errEl.style.display = "none";
+    try {
+      const res = await fetch("prices.json?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) throw new Error("prices.json introuvable (le workflow a-t-il déjà tourné ?)");
+      const data = await res.json();
+      allCards = data.cards || [];
+      const updatedAt = data.updated_at ? new Date(data.updated_at) : new Date();
+      label.textContent = "Mis à jour " + updatedAt.toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      render();
+    } catch (e) {
+      errEl.textContent = "Synchro impossible : " + e.message;
+      errEl.style.display = "block";
+      label.textContent = "Réessayer";
+    } finally {
+      btn.classList.remove("spinning");
+    }
+  }
+
+  document.getElementById("syncBtn").addEventListener("click", sync);
+  sync();
+</script>
+</body>
+</html>
