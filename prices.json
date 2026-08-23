@@ -1,0 +1,15 @@
+{
+  "updated_at": "2026-08-23T15:49:18.595352+00:00",
+  "cards": [
+    {
+      "id": "c1",
+      "game": "pokemon",
+      "name": "Charizard",
+      "set": "Base Set",
+      "grade": "PSA 9",
+      "qty": 1,
+      "price": null,
+      "history": []
+    }
+  ]
+}
