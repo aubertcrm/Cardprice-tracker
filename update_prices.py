@@ -51,8 +51,11 @@ def get_ebay_token():
         )
         resp.raise_for_status()
         return resp.json()["access_token"]
-    except Exception as e:
-        print(f"Erreur token eBay: {e}")
+        except Exception as e:
+        body = ""
+        if hasattr(e, "response") and e.response is not None:
+            body = f" | Reponse eBay: {e.response.text[:300]}"
+        print(f"Erreur token eBay: {e}{body}")
         return None
 
 
