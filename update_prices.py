@@ -25,8 +25,8 @@ CARDS_FILE = "cards.json"
 PRICES_FILE = "prices.json"
 HISTORY_DAYS = 90
 
-EBAY_CLIENT_ID = os.environ.get("EBAY_CLIENT_ID")
-EBAY_CLIENT_SECRET = os.environ.get("EBAY_CLIENT_SECRET")
+EBAY_CLIENT_ID = (os.environ.get("EBAY_CLIENT_ID") or "").strip()
+EBAY_CLIENT_SECRET = (os.environ.get("EBAY_CLIENT_SECRET") or "").strip()
 
 HEADERS_BROWSER = {
     "User-Agent": "Mozilla/5.0 (compatible; CardTrackerBot/1.0; +https://github.com/)"
@@ -37,6 +37,7 @@ def get_ebay_token():
     if not EBAY_CLIENT_ID or not EBAY_CLIENT_SECRET:
         print("Cles eBay absentes, source eBay ignoree.")
         return None
+    print(f"Debug: longueur EBAY_CLIENT_ID={len(EBAY_CLIENT_ID)}, longueur EBAY_CLIENT_SECRET={len(EBAY_CLIENT_SECRET)}")
     try:
         resp = requests.post(
             "https://api.ebay.com/identity/v1/oauth2/token",
