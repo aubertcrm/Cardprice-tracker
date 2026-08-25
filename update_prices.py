@@ -2,14 +2,19 @@
 Met a jour la cote de chaque carte listee dans cards.json.
 
 Sources interrogees :
-- eBay (Browse API officielle, cle gratuite) : fiable, utilise en priorite
-- Mercari (scraping best-effort) : peut casser si le site change, entoure de try/except
-- SNKR DUNK (scraping best-effort) : idem
+- Pokemon TCG API (api.pokemontcg.io) : agrege TCGplayer (USD) et Cardmarket (EUR).
+  Gratuite, sans cle, mais uniquement pour les cartes Pokemon.
+- eBay (Browse API officielle, cle gratuite) : annonces actives, toutes cartes.
+- Mercari (scraping best-effort) : pas d'API publique, fragile.
+- SNKR DUNK (scraping best-effort) : idem.
 
-Sortie : prices.json avec le prix courant + un historique glissant sur 90 jours,
-que le dashboard va lire directement (raw.githubusercontent.com).
+Tous les prix sont convertis en EUR avant d'etre moyennes, pour eviter de
+melanger des dollars et des euros dans un meme calcul.
 
-Variables d'environnement attendues (a definir en secrets GitHub Actions) :
+Sortie : prices.json avec le prix courant (moyenne des sources disponibles)
++ un historique glissant sur 90 jours.
+
+Variables d'environnement attendues (secrets GitHub Actions) :
 - EBAY_CLIENT_ID
 - EBAY_CLIENT_SECRET
 """
@@ -32,6 +37,73 @@ HEADERS_BROWSER = {
     "User-Agent": "Mozilla/5.0 (compatible; CardTrackerBot/1.0; +https://github.com/)"
 }
 
+FALLBACK_USD_TO_EUR = 0.92
+
+
+# ---------------------------------------------------------------------------
+# Taux de change
+# ---------------------------------------------------------------------------
+
+def get_usd_to_eur_rate():
+    try:
+        resp = requests.get(
+            "https://api.frankfurter.app/latest",
+            params={"from": "USD", "to": "EUR"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        rate = resp.json()["rates"]["EUR"]
+        print(f"Taux USD->EUR du jour: {rate}")
+        return rate
+    except Exception as e:
+        print(f"Impossible de recuperer le taux de change, valeur par defaut utilisee: {e}")
+        return FALLBACK_USD_TO_EUR
+
+
+# ---------------------------------------------------------------------------
+# Pokemon TCG API (Pokemon uniquement)
+# ---------------------------------------------------------------------------
+
+def price_from_pokemontcgio(card, usd_to_eur):
+    if card.get("game") != "pokemon":
+        return []
+    try:
+        query = f'name:"{card["name"]}"'
+        if card.get("set"):
+            query += f' set.name:"{card["set"]}"'
+        resp = requests.get(
+            "https://api.pokemontcg.io/v2/cards",
+            params={"q": query, "pageSize": 1},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        results = resp.json().get("data", [])
+        if not results:
+            return []
+        result = results[0]
+        prices = []
+
+        tcgplayer = (result.get("tcgplayer") or {}).get("prices") or {}
+        for variant in tcgplayer.values():
+            market = variant.get("market")
+            if market:
+                prices.append(round(market * usd_to_eur, 2))
+                break
+
+        cardmarket = (result.get("cardmarket") or {}).get("prices") or {}
+        avg_sell = cardmarket.get("averageSellPrice") or cardmarket.get("trendPrice")
+        if avg_sell:
+            prices.append(round(avg_sell, 2))
+
+        return prices
+    except Exception as e:
+        print(f"Erreur Pokemon TCG API pour '{card['name']}': {e}")
+        return []
+
+
+# ---------------------------------------------------------------------------
+# eBay
+# ---------------------------------------------------------------------------
 
 def get_ebay_token():
     if not EBAY_CLIENT_ID or not EBAY_CLIENT_SECRET:
@@ -51,7 +123,7 @@ def get_ebay_token():
         )
         resp.raise_for_status()
         return resp.json()["access_token"]
-        except Exception as e:
+    except Exception as e:
         body = ""
         if hasattr(e, "response") and e.response is not None:
             body = f" | Reponse eBay: {e.response.text[:300]}"
@@ -59,9 +131,9 @@ def get_ebay_token():
         return None
 
 
-def price_from_ebay(token, query):
+def price_from_ebay(token, query, usd_to_eur):
     if not token:
-        return None
+        return []
     try:
         resp = requests.get(
             "https://api.ebay.com/buy/browse/v1/item_summary/search",
@@ -71,18 +143,31 @@ def price_from_ebay(token, query):
         )
         resp.raise_for_status()
         items = resp.json().get("itemSummaries", [])
-        prices = [
-            float(i["price"]["value"])
-            for i in items
-            if "price" in i and i["price"].get("currency") in ("EUR", "USD")
-        ]
-        if not prices:
-            return None
-        return round(statistics.median(prices), 2)
+        prices_eur = []
+        for i in items:
+            price_obj = i.get("price")
+            if not price_obj:
+                continue
+            value = float(price_obj["value"])
+            currency = price_obj.get("currency")
+            if currency == "EUR":
+                prices_eur.append(value)
+            elif currency == "USD":
+                prices_eur.append(round(value * usd_to_eur, 2))
+        if not prices_eur:
+            return []
+        return [round(statistics.median(prices_eur), 2)]
     except Exception as e:
-        print(f"Erreur eBay pour '{query}': {e}")
-        return None
+        body = ""
+        if hasattr(e, "response") and e.response is not None:
+            body = f" | Reponse eBay: {e.response.text[:300]}"
+        print(f"Erreur eBay pour '{query}': {e}{body}")
+        return []
 
+
+# ---------------------------------------------------------------------------
+# Mercari / SNKR DUNK (best-effort, pas d'API publique)
+# ---------------------------------------------------------------------------
 
 def price_from_mercari(query):
     try:
@@ -93,11 +178,11 @@ def price_from_mercari(query):
             timeout=15,
         )
         if resp.status_code != 200:
-            return None
-        return None
+            return []
+        return []
     except Exception as e:
         print(f"Erreur Mercari pour '{query}': {e}")
-        return None
+        return []
 
 
 def price_from_snkrdunk(query):
@@ -109,23 +194,31 @@ def price_from_snkrdunk(query):
             timeout=15,
         )
         if resp.status_code != 200:
-            return None
-        return None
+            return []
+        return []
     except Exception as e:
         print(f"Erreur SNKR DUNK pour '{query}': {e}")
-        return None
+        return []
 
 
-def compute_price(token, card):
+# ---------------------------------------------------------------------------
+# Agregation
+# ---------------------------------------------------------------------------
+
+def compute_price(token, usd_to_eur, card):
     sources = []
+
+    sources += price_from_pokemontcgio(card, usd_to_eur)
+
     for term in card.get("search_terms", [card["name"]]):
-        for fn in (price_from_ebay, price_from_mercari, price_from_snkrdunk):
-            val = fn(token, term) if fn is price_from_ebay else fn(term)
-            if val:
-                sources.append(val)
+        sources += price_from_ebay(token, term, usd_to_eur)
+        sources += price_from_mercari(term)
+        sources += price_from_snkrdunk(term)
+
     if not sources:
-        return None
-    return round(sum(sources) / len(sources), 2)
+        return None, 0
+
+    return round(sum(sources) / len(sources), 2), len(sources)
 
 
 def main():
@@ -139,11 +232,12 @@ def main():
         existing = {}
 
     token = get_ebay_token()
+    usd_to_eur = get_usd_to_eur_rate()
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     updated = []
     for card in cards:
-        price = compute_price(token, card)
+        price, nb_sources = compute_price(token, usd_to_eur, card)
         prev = existing.get(card["id"])
         history = prev["history"][-(HISTORY_DAYS - 1):] if prev else []
 
@@ -152,6 +246,8 @@ def main():
 
         if price is not None:
             history.append({"date": today, "price": price})
+
+        print(f"{card['name']}: {price} EUR ({nb_sources} source(s))")
 
         updated.append(
             {
