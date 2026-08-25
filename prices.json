@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-08-25T16:04:59.120340+00:00",
+  "updated_at": "2026-08-25T16:10:57.884405+00:00",
   "cards": [
     {
       "id": "c1",
       "game": "pokemon",
       "name": "Charizard",
       "set": "Base Set",
-      "grade": "PSA 10",
+      "grade": "PSA 9",
       "qty": 1,
-      "price": 565.93,
+      "price": 4141.65,
       "history": [
         {
           "date": "2026-08-25",
@@ -37,6 +37,10 @@
         {
           "date": "2026-08-25",
           "price": 565.93
+        },
+        {
+          "date": "2026-08-25",
+          "price": 4141.65
         }
       ]
     }
