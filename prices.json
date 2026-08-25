@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-24T16:25:14.741017+00:00",
+  "updated_at": "2026-08-25T11:55:34.331393+00:00",
   "cards": [
     {
       "id": "c1",
@@ -8,8 +8,13 @@
       "set": "Base Set",
       "grade": "PSA 9",
       "qty": 1,
-      "price": null,
-      "history": []
+      "price": 354.14,
+      "history": [
+        {
+          "date": "2026-08-25",
+          "price": 354.14
+        }
+      ]
     }
   ]
 }
