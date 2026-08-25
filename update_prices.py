@@ -162,10 +162,12 @@ def price_from_mercari(query, rates):
             headers=HEADERS_BROWSER,
             timeout=15,
         )
+        print(f"Debug Mercari: status={resp.status_code}, taille reponse={len(resp.text)}")
         if resp.status_code != 200:
             return []
         prices_jpy = [int(v.replace(",", "")) for v in re.findall(r'"price":"?(\d[\d,]*)"?', resp.text)]
         prices_jpy = [p for p in prices_jpy if 100 <= p <= 5_000_000]
+        print(f"Debug Mercari: {len(prices_jpy)} prix trouves dans le HTML")
         if not prices_jpy:
             return []
         converted = to_eur(statistics.median(prices_jpy), "JPY", rates)
