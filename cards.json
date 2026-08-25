@@ -4,9 +4,10 @@
     "game": "pokemon",
     "name": "Charizard",
     "set": "Base Set",
+    "year": 1999,
     "card_number": "4/102",
     "language": "EN",
-    "grade": "PSA 10",
+    "grade": "PSA 9",
     "qty": 1
   }
 ]
