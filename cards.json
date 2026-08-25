@@ -4,8 +4,9 @@
     "game": "pokemon",
     "name": "Charizard",
     "set": "Base Set",
+    "card_number": "4/102",
+    "language": "EN",
     "grade": "PSA 9",
-    "qty": 1,
-    "search_terms": ["Charizard Base Set PSA 9"]
+    "qty": 1
   }
 ]
