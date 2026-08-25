@@ -10,12 +10,9 @@ Sources interrogees :
 - Cardrush (scraping best-effort)
 - Yuyu-tei (scraping best-effort)
 
-Toutes ces sources sauf eBay/Browse API n'ont pas d'API publique : le
-scraping est fragile par nature. Chaque source echoue silencieusement
-(elle est juste ignoree) sans faire planter le script. Des logs "Debug"
-indiquent ce que chaque source a reussi (ou pas) a recuperer.
-
-Tous les prix sont convertis en EUR avant d'etre moyennes.
+La requete de recherche est construite automatiquement a partir des champs
+de chaque carte (nom, set, numero, langue, grade) et exclut les faux
+positifs frequents (lots, reproductions, accessoires...).
 """
 
 import json
@@ -69,7 +66,27 @@ def to_eur(value, currency, rates):
     return round(value * rate, 2)
 
 
-def price_from_ebay_sold(query, rates):
+def build_query(card):
+    """Construit une requete eBay precise a partir des champs de la carte,
+    pour eviter les faux positifs (reproductions, lots, accessoires...).
+    """
+    parts = [f'"{card["name"]}"']
+    if card.get("set"):
+        parts.append(f'"{card["set"]}"')
+    if card.get("card_number"):
+        parts.append(f'"{card["card_number"]}"')
+    if card.get("language") and card["language"].lower() not in ("en", "english", "anglais"):
+        parts.append(card["language"])
+    grade = card.get("grade")
+    if grade and grade not in ("-", "—"):
+        parts.append(grade)
+
+    exclusions = "-lot -custom -proxy -repro -reprint -fake -playmat -sleeve -binder -case -display -deck -box -bulk"
+    return " ".join(parts) + " " + exclusions
+
+
+def price_from_ebay_sold(card, rates):
+    query = build_query(card)
     try:
         resp = requests.get(
             "https://www.ebay.com/sch/i.html",
@@ -123,9 +140,10 @@ def get_ebay_token():
         return None
 
 
-def price_from_ebay_active(token, query, rates):
+def price_from_ebay_active(token, card, rates):
     if not token:
         return []
+    query = build_query(card)
     try:
         resp = requests.get(
             "https://api.ebay.com/buy/browse/v1/item_summary/search",
@@ -253,25 +271,27 @@ def price_from_yuyutei(query, rates):
 
 def compute_price(token, rates, card):
     sources = {}
-    for term in card.get("search_terms", [card["name"]]):
-        sold = price_from_ebay_sold(term, rates)
-        if sold:
-            sources["ebay_sold"] = sold[0]
-        active = price_from_ebay_active(token, term, rates)
-        if active:
-            sources.setdefault("ebay_active", active[0])
-        mercari = price_from_mercari(term, rates)
-        if mercari:
-            sources.setdefault("mercari", mercari[0])
-        snkrdunk = price_from_snkrdunk(term, rates)
-        if snkrdunk:
-            sources.setdefault("snkrdunk", snkrdunk[0])
-        cardrush = price_from_cardrush(term, rates)
-        if cardrush:
-            sources.setdefault("cardrush", cardrush[0])
-        yuyutei = price_from_yuyutei(term, rates)
-        if yuyutei:
-            sources.setdefault("yuyutei", yuyutei[0])
+
+    sold = price_from_ebay_sold(card, rates)
+    if sold:
+        sources["ebay_sold"] = sold[0]
+    active = price_from_ebay_active(token, card, rates)
+    if active:
+        sources.setdefault("ebay_active", active[0])
+
+    query = build_query(card)
+    mercari = price_from_mercari(query, rates)
+    if mercari:
+        sources.setdefault("mercari", mercari[0])
+    snkrdunk = price_from_snkrdunk(query, rates)
+    if snkrdunk:
+        sources.setdefault("snkrdunk", snkrdunk[0])
+    cardrush = price_from_cardrush(query, rates)
+    if cardrush:
+        sources.setdefault("cardrush", cardrush[0])
+    yuyutei = price_from_yuyutei(query, rates)
+    if yuyutei:
+        sources.setdefault("yuyutei", yuyutei[0])
 
     if not sources:
         return None, {}
