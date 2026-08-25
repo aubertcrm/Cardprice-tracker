@@ -3,25 +3,19 @@ Met a jour la cote de chaque carte listee dans cards.json en moyennant
 plusieurs sources.
 
 Sources interrogees :
-- eBay, ventes reussies (scraping de la page "Sold Items" - Marketplace
-  Insights API n'etant pas accessible aux comptes non-partenaires)
-- eBay, annonces actives (Browse API officielle, cle gratuite) - source de
-  secours si le scraping des ventes echoue
+- eBay, ventes reussies (scraping de la page "Sold Items")
+- eBay, annonces actives (Browse API officielle, cle gratuite)
 - Mercari (scraping best-effort)
 - SNKR DUNK (scraping best-effort)
 - Cardrush (scraping best-effort)
 - Yuyu-tei (scraping best-effort)
 
 Toutes ces sources sauf eBay/Browse API n'ont pas d'API publique : le
-scraping est fragile par nature (structure HTML qui peut changer sans
-prevenir, blocages anti-bot possibles). Chaque source echoue silencieusement
-(elle est juste ignoree) sans faire planter le script.
+scraping est fragile par nature. Chaque source echoue silencieusement
+(elle est juste ignoree) sans faire planter le script. Des logs "Debug"
+indiquent ce que chaque source a reussi (ou pas) a recuperer.
 
 Tous les prix sont convertis en EUR avant d'etre moyennes.
-
-Variables d'environnement attendues (secrets GitHub Actions), optionnelles :
-- EBAY_CLIENT_ID
-- EBAY_CLIENT_SECRET
 """
 
 import json
@@ -83,11 +77,14 @@ def price_from_ebay_sold(query, rates):
             headers=HEADERS_BROWSER,
             timeout=15,
         )
+        print(f"Debug eBay sold: status={resp.status_code}, taille reponse={len(resp.text)}")
         if resp.status_code != 200:
             return []
         soup = BeautifulSoup(resp.text, "html.parser")
         prices = []
-        for tag in soup.select(".s-item__price"):
+        matched_tags = soup.select(".s-item__price")
+        print(f"Debug eBay sold: {len(matched_tags)} balises .s-item__price trouvees")
+        for tag in matched_tags:
             m = re.search(r"([\d,]+\.\d{2})", tag.get_text())
             if m:
                 value = float(m.group(1).replace(",", ""))
@@ -185,10 +182,12 @@ def price_from_snkrdunk(query, rates):
             headers=HEADERS_BROWSER,
             timeout=15,
         )
+        print(f"Debug SNKR DUNK: status={resp.status_code}, taille reponse={len(resp.text)}")
         if resp.status_code != 200:
             return []
         prices_jpy = [int(v.replace(",", "")) for v in re.findall(r'"price":"?(\d[\d,]*)"?', resp.text)]
         prices_jpy = [p for p in prices_jpy if 100 <= p <= 5_000_000]
+        print(f"Debug SNKR DUNK: {len(prices_jpy)} prix trouves dans le HTML")
         if not prices_jpy:
             return []
         converted = to_eur(statistics.median(prices_jpy), "JPY", rates)
@@ -206,6 +205,7 @@ def price_from_cardrush(query, rates):
             headers=HEADERS_BROWSER,
             timeout=15,
         )
+        print(f"Debug Cardrush: status={resp.status_code}, taille reponse={len(resp.text)}")
         if resp.status_code != 200:
             return []
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -214,6 +214,7 @@ def price_from_cardrush(query, rates):
             m = re.search(r"([\d,]+)\s*円", tag.get_text())
             if m:
                 prices_jpy.append(int(m.group(1).replace(",", "")))
+        print(f"Debug Cardrush: {len(prices_jpy)} prix trouves dans le HTML")
         if not prices_jpy:
             return []
         converted = to_eur(statistics.median(prices_jpy), "JPY", rates)
@@ -231,6 +232,7 @@ def price_from_yuyutei(query, rates):
             headers=HEADERS_BROWSER,
             timeout=15,
         )
+        print(f"Debug Yuyu-tei: status={resp.status_code}, taille reponse={len(resp.text)}")
         if resp.status_code != 200:
             return []
         soup = BeautifulSoup(resp.text, "html.parser")
@@ -239,6 +241,7 @@ def price_from_yuyutei(query, rates):
             m = re.search(r"([\d,]+)\s*円", tag.get_text())
             if m:
                 prices_jpy.append(int(m.group(1).replace(",", "")))
+        print(f"Debug Yuyu-tei: {len(prices_jpy)} prix trouves dans le HTML")
         if not prices_jpy:
             return []
         converted = to_eur(statistics.median(prices_jpy), "JPY", rates)
