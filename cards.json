@@ -58,5 +58,17 @@
     "grade": "PSA 10",
     "qty": 1,
     "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-romance-dawn/roronoa-zoro-flagship-battle-op01-025"
+  },
+  {
+    "id": "c1787787887097",
+    "game": "pokemon",
+    "name": "Pikachu [Mega Tokyo's] #98/XY-P",
+    "set": "Pokemon Japanese Promo",
+    "year": 2014,
+    "card_number": "#98/XY-P",
+    "language": "JP",
+    "grade": "PSA 8",
+    "qty": 1,
+    "pricecharting_url": "https://www.pricecharting.com/game/pokemon-japanese-promo/pikachu-mega-tokyo%27s-98xy-p#completed-auctions-new"
   }
 ]
