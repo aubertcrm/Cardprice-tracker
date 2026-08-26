@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-26T11:07:28.929767+00:00",
+  "updated_at": "2026-08-26T11:10:58.286649+00:00",
   "cards": [
     {
       "id": "c1",
@@ -64,6 +64,10 @@
         {
           "date": "2026-08-26",
           "price": 3858.69
+        },
+        {
+          "date": "2026-08-26",
+          "price": 3858.69
         }
       ]
     },
@@ -73,6 +77,17 @@
       "name": "Umbreon SVP 067/SV-P YU NAGABA",
       "set": "",
       "grade": "PSA 10",
+      "qty": 1,
+      "price": null,
+      "sources": {},
+      "history": []
+    },
+    {
+      "id": "c1787742552430",
+      "game": "pokemon",
+      "name": "Umbreon 067 SV-P YU NAGABA",
+      "set": "",
+      "grade": "PSAA 10",
       "qty": 1,
       "price": null,
       "sources": {},
