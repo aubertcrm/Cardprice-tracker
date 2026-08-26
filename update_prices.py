@@ -3,16 +3,25 @@ Met a jour la cote de chaque carte listee dans cards.json en moyennant
 plusieurs sources.
 
 Sources interrogees :
-- eBay, ventes reussies (scraping de la page "Sold Items")
-- eBay, annonces actives (Browse API officielle, cle gratuite)
+- eBay, ventes reussies (scraping de la page "Sold Items" - Marketplace
+  Insights API n'etant pas accessible aux comptes non-partenaires)
+- eBay, annonces actives (Browse API officielle, cle gratuite) - source de
+  secours si le scraping des ventes echoue
 - Mercari (scraping best-effort)
 - SNKR DUNK (scraping best-effort)
 - Cardrush (scraping best-effort)
 - Yuyu-tei (scraping best-effort)
 
-La requete de recherche est construite automatiquement a partir des champs
-de chaque carte (nom, set, annee, numero, langue, grade) et exclut les faux
-positifs frequents (lots, reproductions, accessoires, mauvaise reedition...).
+Toutes ces sources sauf eBay/Browse API n'ont pas d'API publique : le
+scraping est fragile par nature (structure HTML qui peut changer sans
+prevenir, blocages anti-bot possibles). Chaque source echoue silencieusement
+(elle est juste ignoree) sans faire planter le script.
+
+Tous les prix sont convertis en EUR avant d'etre moyennes.
+
+Variables d'environnement attendues (secrets GitHub Actions), optionnelles :
+- EBAY_CLIENT_ID
+- EBAY_CLIENT_SECRET
 """
 
 import json
@@ -66,6 +75,21 @@ def to_eur(value, currency, rates):
     return round(value * rate, 2)
 
 
+def trimmed_median(values):
+    """Trie les valeurs et retire le quart le plus bas et le quart le plus haut
+    avant de calculer la mediane, pour limiter l'impact des mauvaises
+    correspondances (carte differente, reproduction, lot...).
+    """
+    if not values:
+        return None
+    values = sorted(values)
+    n = len(values)
+    if n >= 4:
+        cut = n // 4
+        values = values[cut: n - cut]
+    return round(statistics.median(values), 2)
+
+
 def build_query(card):
     """Construit une requete eBay precise a partir des champs de la carte,
     pour eviter les faux positifs (reproductions, lots, accessoires,
@@ -111,9 +135,8 @@ def price_from_ebay_sold(card, rates):
                 converted = to_eur(value, "USD", rates)
                 if converted:
                     prices.append(converted)
-        if not prices:
-            return []
-        return [round(statistics.median(prices), 2)]
+        result = trimmed_median(prices)
+        return [result] if result else []
     except Exception as e:
         print(f"Erreur eBay (ventes) pour '{query}': {e}")
         return []
@@ -151,7 +174,7 @@ def price_from_ebay_active(token, card, rates):
         resp = requests.get(
             "https://api.ebay.com/buy/browse/v1/item_summary/search",
             headers={"Authorization": f"Bearer {token}"},
-            params={"q": query, "limit": 15, "sort": "price"},
+            params={"q": query, "limit": 30},
             timeout=15,
         )
         resp.raise_for_status()
@@ -164,9 +187,8 @@ def price_from_ebay_active(token, card, rates):
             converted = to_eur(float(price_obj["value"]), price_obj.get("currency"), rates)
             if converted:
                 prices.append(converted)
-        if not prices:
-            return []
-        return [round(statistics.median(prices), 2)]
+        result = trimmed_median(prices)
+        return [result] if result else []
     except Exception as e:
         print(f"Erreur eBay (annonces) pour '{query}': {e}")
         return []
