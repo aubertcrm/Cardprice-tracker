@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-26T11:52:17.802140+00:00",
+  "updated_at": "2026-08-26T11:58:27.546363+00:00",
   "cards": [
     {
       "id": "c1",
@@ -92,6 +92,10 @@
         {
           "date": "2026-08-26",
           "price": 4214.54
+        },
+        {
+          "date": "2026-08-26",
+          "price": 4214.54
         }
       ]
     },
@@ -126,18 +130,24 @@
         {
           "date": "2026-08-26",
           "price": 335.38
+        },
+        {
+          "date": "2026-08-26",
+          "price": 335.38
         }
       ]
     },
     {
       "id": "c3",
       "game": "onepiece",
-      "name": "Luffy Manga",
-      "set": "Carrying on His Will",
+      "name": "Luffy",
+      "set": "Manga Alt Art",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 2619.62,
-      "sources": {},
+      "price": 38586.77,
+      "sources": {
+        "ebay_active": 38586.77
+      },
       "history": [
         {
           "date": "2026-08-26",
@@ -150,6 +160,10 @@
         {
           "date": "2026-08-26",
           "price": 2619.62
+        },
+        {
+          "date": "2026-08-26",
+          "price": 38586.77
         }
       ]
     }
