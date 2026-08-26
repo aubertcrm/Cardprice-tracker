@@ -5,7 +5,7 @@ plusieurs sources.
 Sources interrogees :
 - PriceCharting (catalogue par ID de produit - le plus fiable, source payante).
   Identifiable par pricecharting_id (exact) ou pricecharting_url (URL de la
-  page produit, resolue automatiquement en comparant nom ET set).
+  page produit, resolue automatiquement en comparant nom, set et numero).
 - eBay, ventes reussies (scraping de la page "Sold Items")
 - eBay, annonces actives (Browse API officielle, cle gratuite)
 - Mercari (scraping best-effort)
@@ -31,7 +31,7 @@ import os
 import re
 import statistics
 from datetime import datetime, timezone
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 import requests
 from bs4 import BeautifulSoup
@@ -131,17 +131,21 @@ def _slugify(text):
     return re.sub(r"[^a-z0-9]", "", text.lower())
 
 
+def _extract_numbers(text):
+    return set(re.findall(r"\d{2,}", text))
+
+
 def resolve_pricecharting_id_from_url(url):
-    """A partir de l'URL d'une page produit PriceCharting, retrouve
-    automatiquement l'ID du produit via une recherche, en comparant nom ET
-    set pour eviter de confondre des variantes proches (ex: version
-    "Japanese" vs version normale, qui partagent le meme nom de carte).
+    """A partir de l'URL d'une page produit PriceCharting (celle qu'on visite
+    dans le navigateur), retrouve automatiquement l'ID du produit via une
+    recherche, en comparant les slugs pour prendre la bonne correspondance.
     """
     try:
         path = urlparse(url).path.strip("/").split("/")
         if len(path) < 2:
             return None
         console_slug, product_slug = path[-2], path[-1]
+        console_slug, product_slug = unquote(console_slug), unquote(product_slug)
         query = product_slug.replace("-", " ")
 
         resp = requests.get(
@@ -158,8 +162,11 @@ def resolve_pricecharting_id_from_url(url):
         products = data.get("products", [])
         target_slug = _slugify(product_slug)
         target_console_slug = _slugify(console_slug)
+        target_numbers = _extract_numbers(product_slug)
 
-        # 1er passage : exige que le nom ET le set correspondent (le plus fiable)
+        # 1er passage : exige que le nom ET le set correspondent (le plus fiable,
+        # evite de confondre deux variantes qui partagent le meme nom de carte
+        # mais un set different, ex: version "Japanese" vs version normale).
         for p in products:
             if _slugify(p.get("product-name", "")) == target_slug and _slugify(p.get("console-name", "")) == target_console_slug:
                 print(f"Debug PriceCharting: URL resolue vers '{p.get('product-name')}' / '{p.get('console-name')}' (id={p['id']})")
@@ -171,9 +178,18 @@ def resolve_pricecharting_id_from_url(url):
                 print(f"Debug PriceCharting: correspondance nom seul (set different) '{p.get('product-name')}' / '{p.get('console-name')}' (id={p['id']})")
                 return p["id"]
 
-        if products:
-            print(f"Debug PriceCharting: pas de correspondance exacte, utilise le 1er resultat '{products[0].get('product-name')}' (id={products[0]['id']})")
-            return products[0]["id"]
+        # 3e passage (secours prudent) : le numero de carte doit se retrouver
+        # dans le nom du candidat, sinon on risque de recuperer une carte
+        # totalement differente (ex: #98 au lieu de #204 sur un meme visuel).
+        # Sans numero correspondant, on abandonne plutot que de deviner au hasard.
+        if target_numbers:
+            for p in products:
+                candidate_numbers = _extract_numbers(p.get("product-name", ""))
+                if target_numbers & candidate_numbers:
+                    print(f"Debug PriceCharting: correspondance partielle par numero '{p.get('product-name')}' / '{p.get('console-name')}' (id={p['id']})")
+                    return p["id"]
+
+        print(f"Debug PriceCharting: aucune correspondance fiable pour '{product_slug}', carte ignoree (pas de prix devine au hasard)")
         return None
     except Exception as e:
         print(f"Erreur resolution URL PriceCharting: {e}")
