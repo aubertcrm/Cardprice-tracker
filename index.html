@@ -212,6 +212,7 @@
         <input class="field-input" id="formLanguage" placeholder="Langue (EN, JP, FR...)" value="EN" />
         <input class="field-input" id="formQty" type="number" placeholder="Qté" value="1" />
         <input class="field-input" id="formPurchase" type="number" placeholder="Prix d'achat (€)" />
+        <input class="field-input" id="formPricechartingId" placeholder="ID PriceCharting (optionnel)" />
       </div>
       <p class="add-form-note">La carte est écrite directement dans cards.json sur GitHub. Son prix de marché apparaîtra "en attente" jusqu'au prochain passage du script (automatique chaque nuit, ou lance-le manuellement dans Actions).</p>
       <div style="display:flex; gap:8px; margin-top:10px;">
@@ -335,7 +336,7 @@
       const data = await res.json();
       const local = loadLocal();
       const merged = {};
-      cards.forEach((c) => (merged[c.id] = c)); // garde les cartes locales pas encore dans prices.json
+      cards.forEach((c) => (merged[c.id] = c));
       (data.cards || []).forEach((remote) => {
         const localExtra = local[remote.id] || {};
         const prevLocal = merged[remote.id] || {};
@@ -706,12 +707,14 @@
     const language = document.getElementById("formLanguage").value.trim() || "EN";
     const qty = parseInt(document.getElementById("formQty").value) || 1;
     const purchasePrice = document.getElementById("formPurchase").value;
+    const pricechartingId = document.getElementById("formPricechartingId").value.trim();
 
     const cardsJsonEntry = {
       id, game, name, set,
       year: year ? parseInt(year) : undefined,
       card_number: cardNumber || undefined,
       language, grade, qty,
+      pricecharting_id: pricechartingId || undefined,
     };
 
     const btn = document.getElementById("formSave");
@@ -722,7 +725,7 @@
       await pushCardToGitHub(cardsJsonEntry);
       cards.push({ id, game, name, set, grade, qty, price: null, sources: {}, history: [], sold: false, salePrice: null, purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null });
       updateLocalCard(id, { purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null, sold: false, salePrice: null });
-      ["formName", "formSet", "formGrade", "formYear", "formCardNumber", "formPurchase"].forEach((f) => document.getElementById(f).value = "");
+      ["formName", "formSet", "formGrade", "formYear", "formCardNumber", "formPurchase", "formPricechartingId"].forEach((f) => document.getElementById(f).value = "");
       document.getElementById("formLanguage").value = "EN";
       document.getElementById("formQty").value = "1";
       document.getElementById("addForm").classList.remove("open");
