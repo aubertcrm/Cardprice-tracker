@@ -5,213 +5,266 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Ma cote</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: #101018;
-    color: #F1F1F4;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+    margin: 0; background: #0B0C14; color: #F2F2F6;
+    font-family: 'Inter', system-ui, sans-serif;
     padding: 24px 16px 60px;
   }
-  .wrap { max-width: 640px; margin: 0 auto; }
-
-  .eyebrow { font-size: 11px; letter-spacing: 0.12em; color: #6E7086; margin: 0; font-weight: 600; }
-  h1 { font-size: 28px; font-weight: 700; margin: 2px 0 4px; letter-spacing: -0.02em; }
-  .sync-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: transparent; border: none; color: #6E7086;
-    font-size: 11px; padding: 0; cursor: pointer; margin-bottom: 14px;
-    font-family: inherit;
-  }
-  .sync-btn svg { animation: none; }
-  .sync-btn.spinning svg { animation: spin 1s linear infinite; }
-  .sync-error { font-size: 11px; color: #F26D6D; margin: 4px 0 14px; }
-
-  .tabs { display: flex; gap: 6px; margin-bottom: 20px; }
-  .tab {
-    padding: 6px 14px; border-radius: 999px; border: 1px solid #26283A;
-    background: transparent; color: #9A9CB0; font-size: 13px; cursor: pointer;
-    font-family: inherit;
-  }
-  .tab.active { background: #1D1F2E; color: #F1F1F4; border-color: #3A3D56; }
-
-  .hero {
-    background: linear-gradient(160deg, #171826, #12131C);
-    border: 1px solid #22243450;
-    border-radius: 20px;
-    padding: 24px 20px;
-    margin-bottom: 24px;
-  }
-  .hero-label { font-size: 13px; color: #8A8CA0; margin: 0; }
-  .hero-value {
-    font-size: 42px; font-weight: 800; letter-spacing: -0.03em;
-    margin: 4px 0 6px;
-    font-family: 'SF Mono', 'IBM Plex Mono', monospace;
-    background-image: linear-gradient(90deg, #7DD3FC, #C084FC, #FDE68A, #7DD3FC);
-    background-size: 200% auto;
-    -webkit-background-clip: text; background-clip: text;
-    color: transparent;
-    animation: holoShift 6s linear infinite;
-  }
-  .hero-change { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
-
-  .alloc-row { margin-bottom: 12px; }
-  .alloc-label-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-  .alloc-bar-bg { height: 5px; border-radius: 999px; background: #22243A; }
-  .alloc-bar-fill { height: 100%; border-radius: 999px; }
-
-  .list-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .section-label { font-size: 13px; color: #8A8CA0; margin: 0; font-weight: 600; }
-
-  .list { display: flex; flex-direction: column; gap: 6px; }
-  .row {
-    display: flex; align-items: center; gap: 12px;
-    background: #171826; border: 1px solid #22243450; border-radius: 12px;
-    padding: 10px 12px;
-  }
-  .game-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
-  .row-info { flex: 1 1 auto; min-width: 0; }
-  .row-name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row-meta { font-size: 12px; color: #7B7D92; margin-top: 2px; }
-  .row-price-col { text-align: right; flex-shrink: 0; }
-  .row-price { font-size: 14px; font-weight: 700; font-family: 'SF Mono', 'IBM Plex Mono', monospace; }
-  .row-change { font-size: 12px; font-weight: 600; }
-  .row-nodata { font-size: 11px; color: #6E7086; font-style: italic; }
-
-  .footnote { font-size: 12px; color: #5C5E72; text-align: center; margin-top: 20px; line-height: 1.5; }
-  .empty { text-align: center; color: #6E7086; font-size: 13px; padding: 30px 0; }
-
+  .wrap { max-width: 680px; margin: 0 auto; }
+  input, select, button { font-family: inherit; }
+  input:focus, select:focus { outline: 2px solid #6EE7F0; outline-offset: 1px; }
   @keyframes holoShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.14em; color: #6E7086; margin: 0; font-weight: 600; font-family: 'Space Grotesk', sans-serif; }
+  h1 { font-size: 30px; font-weight: 700; margin: 3px 0 8px; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .sync-btn { display: inline-flex; align-items: center; gap: 5px; background: transparent; border: none; color: #6E7086; font-size: 11px; padding: 0; cursor: pointer; }
+  .sync-btn.spinning svg { animation: spin 1s linear infinite; }
+  .sync-error { font-size: 11px; color: #F06464; margin: 4px 0 0; }
+  .export-btn { display: flex; align-items: center; gap: 6px; background: #14151F; border: 1px solid #262838; color: #C7C9D9; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 500; cursor: pointer; height: fit-content; }
+
+  .hero { position: relative; overflow: hidden; background: linear-gradient(160deg, #14151F, #0E0F17); border: 1px solid #20222f; border-radius: 20px; padding: 22px 20px; margin-bottom: 20px; }
+  .watermark { position: absolute; top: 0; right: 0; width: 60%; height: 100%; pointer-events: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 18px; position: relative; }
+  .hero-label { font-size: 12px; color: #8A8CA0; margin: 0; }
+  .hero-value {
+    font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    background-image: linear-gradient(90deg, #6EE7F0, #B98CF2, #F4D35E, #6EE7F0);
+    background-size: 200% auto; -webkit-background-clip: text; background-clip: text;
+    color: transparent; animation: holoShift 6s linear infinite;
+  }
+  .hero-change { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; }
+  .hero-chart { flex: 0 0 140px; min-width: 100px; height: 70px; }
+  .hero-chart svg { width: 100%; height: 100%; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #1C1E2A; position: relative; }
+  .stat-box { background: #0F1019; border: 1px solid #1C1E2A; border-radius: 12px; padding: 10px 12px; }
+  .stat-label { font-size: 10.5px; color: #6E7086; margin: 0 0 4px; }
+  .stat-value { font-size: 15px; font-weight: 600; margin: 0; font-family: 'IBM Plex Mono', monospace; }
+
+  .allocation { display: flex; flex-direction: column; gap: 10px; position: relative; }
+  .alloc-label-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+  .alloc-bar-bg { height: 5px; border-radius: 999px; background: #1C1E2A; }
+  .alloc-bar-fill { height: 100%; border-radius: 999px; }
+
+  .toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .search-box { flex: 1; display: flex; align-items: center; gap: 8px; background: #14151F; border: 1px solid #262838; border-radius: 10px; padding: 8px 12px; }
+  .search-box input { flex: 1; background: transparent; border: none; color: #F2F2F6; font-size: 13px; outline: none; }
+  .toolbar-right { display: flex; gap: 8px; }
+  select.select { background: #14151F; border: 1px solid #262838; color: #C7C9D9; border-radius: 10px; padding: 8px 10px; font-size: 12px; }
+  .add-btn { display: flex; align-items: center; gap: 4px; background: #6EE7F0; color: #0B0C14; border: none; border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+  .tab-row { display: flex; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  .tabs { display: flex; gap: 6px; }
+  .tab { padding: 5px 12px; border-radius: 999px; border: 1px solid #262838; background: transparent; color: #9A9CB0; font-size: 12px; cursor: pointer; }
+  .tab.active { background: #1B1D2A; color: #F2F2F6; border-color: #3A3D56; }
+
+  .add-form { background: #14151F; border: 1px solid #262838; border-radius: 14px; padding: 14px; margin-bottom: 16px; display: none; }
+  .add-form.open { display: block; }
+  .add-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .add-form-note { font-size: 11px; color: #6E7086; margin: 10px 0 0; line-height: 1.4; }
+  .field-input { background: #0B0C14; border: 1px solid #2C2E42; border-radius: 8px; color: #F2F2F6; padding: 8px 10px; font-size: 13px; width: 100%; }
+  .save-btn { display: inline-flex; align-items: center; gap: 5px; background: #6EE7F0; color: #0B0C14; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+  .cancel-btn { display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 1px solid #2C2E42; color: #9A9CB0; border-radius: 8px; padding: 8px 14px; font-size: 12.5px; cursor: pointer; }
+
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .empty { text-align: center; color: #6E7086; font-size: 13px; padding: 30px 0; }
+
+  .slab { position: relative; background: #14151F; border: 1px solid #22243450; border-radius: 14px; overflow: hidden; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+  .slab:hover { transform: translateY(-1px); border-color: #45485E; box-shadow: 0 4px 24px -8px rgba(110,231,240,0.15); }
+  .slab-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #1C1E2A; background: #111220; }
+  .grade-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; color: #C7C9D9; border: 1px solid; border-radius: 999px; padding: 2px 8px; font-family: 'Space Grotesk', sans-serif; }
+  .grade-dot { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
+  .sold-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: #F4D35E; background: #2A2510; border-radius: 999px; padding: 2px 8px; }
+  .source-tag { margin-left: auto; font-size: 10.5px; color: #6E7086; }
+
+  .slab-body { display: flex; align-items: center; gap: 10px; padding: 12px; cursor: pointer; }
+  .row-info { flex: 1 1 auto; min-width: 0; }
+  .row-name { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-meta { font-size: 12px; color: #7B7D92; margin-top: 2px; }
+  .row-price-col { text-align: right; flex-shrink: 0; }
+  .row-price { font-size: 15px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
+  .row-change { font-size: 12px; font-weight: 600; }
+  .row-nodata { font-size: 11px; color: #6E7086; font-style: italic; }
+  .chevron { transition: transform 0.15s; flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
+
+  .expand-panel { padding: 0 12px 14px; }
+  .mini-chart { margin-bottom: 10px; height: 50px; }
+  .mini-chart svg { width: 100%; height: 100%; }
+  .pl-grid { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+  .pl-label { font-size: 10.5px; color: #6E7086; margin: 0 0 3px; }
+  .pl-value { font-size: 13.5px; font-weight: 600; margin: 0; font-family: 'IBM Plex Mono', monospace; }
+  .edit-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; background: transparent; border: 1px solid #2C2E42; color: #9A9CB0; border-radius: 8px; padding: 5px 10px; font-size: 11.5px; cursor: pointer; }
+
+  .edit-grid { display: none; flex-direction: column; gap: 10px; }
+  .edit-grid.open { display: flex; }
+  .pl-grid.hidden { display: none; }
+  .edit-label { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: #9A9CB0; }
+  .edit-label-checkbox { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #C7C9D9; }
+
+  .delete-btn { display: inline-flex; align-items: center; gap: 4px; background: transparent; border: none; color: #5C5E72; font-size: 11px; cursor: pointer; margin-top: 10px; padding: 0; }
+
+  .footnote { font-size: 11.5px; color: #5C5E72; text-align: center; margin-top: 24px; line-height: 1.5; }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <p class="eyebrow">COLLECTION</p>
-    <h1>Ma cote</h1>
-    <button class="sync-btn" id="syncBtn">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-      <span id="syncLabel">Chargement...</span>
-    </button>
-    <p class="sync-error" id="syncError" style="display:none"></p>
-
-    <div class="tabs">
-      <button class="tab active" data-filter="all">Tout</button>
-      <button class="tab" data-filter="pokemon">Pokémon</button>
-      <button class="tab" data-filter="onepiece">One Piece</button>
-    </div>
+    <header class="header">
+      <div>
+        <p class="eyebrow">COLLECTION</p>
+        <h1>Ma cote</h1>
+        <button class="sync-btn" id="syncBtn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <span id="syncLabel">Chargement...</span>
+        </button>
+        <p class="sync-error" id="syncError" style="display:none"></p>
+      </div>
+      <button class="export-btn" id="exportBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export CSV
+      </button>
+    </header>
 
     <section class="hero">
-      <p class="hero-label">Valeur totale</p>
-      <div class="hero-value" id="heroValue">—</div>
-      <div class="hero-change" id="heroChange"></div>
-      <div id="allocation"></div>
+      <svg class="watermark" id="watermark" viewBox="0 0 200 200" fill="none"></svg>
+      <div class="hero-top">
+        <div>
+          <p class="hero-label">Valeur totale (cartes conservées)</p>
+          <div class="hero-value" id="heroValue">—</div>
+          <div class="hero-change" id="heroChange"></div>
+        </div>
+        <div class="hero-chart" id="heroChart"></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><p class="stat-label">Investi</p><p class="stat-value" id="statInvested">—</p></div>
+        <div class="stat-box"><p class="stat-label">P&amp;L latent</p><p class="stat-value" id="statUnrealized">—</p></div>
+        <div class="stat-box"><p class="stat-label">P&amp;L réalisé</p><p class="stat-value" id="statRealized">—</p></div>
+        <div class="stat-box"><p class="stat-label">Cartes</p><p class="stat-value" id="statCount">—</p></div>
+      </div>
+      <div class="allocation" id="allocation"></div>
     </section>
 
-    <div class="list-header-row">
-      <p class="section-label" id="listCount">Cartes</p>
+    <div class="toolbar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E7086" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input id="searchInput" placeholder="Rechercher une carte..." />
+      </div>
+      <div class="toolbar-right">
+        <select class="select" id="sortSelect">
+          <option value="value_desc">Valeur ↓</option>
+          <option value="value_asc">Valeur ↑</option>
+          <option value="change_desc">Variation ↓</option>
+          <option value="change_asc">Variation ↑</option>
+          <option value="name">Nom A-Z</option>
+        </select>
+        <button class="add-btn" id="addToggleBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Ajouter
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <div class="tabs" id="gameTabs">
+        <button class="tab active" data-filter="all">Tout</button>
+        <button class="tab" data-filter="pokemon">Pokémon</button>
+        <button class="tab" data-filter="onepiece">One Piece</button>
+      </div>
+      <div class="tabs" id="heldTabs">
+        <button class="tab active" data-held="held">Conservées</button>
+        <button class="tab" data-held="sold">Vendues</button>
+        <button class="tab" data-held="all">Toutes</button>
+      </div>
+    </div>
+
+    <div class="add-form" id="addForm">
+      <div class="add-form-grid">
+        <select class="field-input" id="formGame">
+          <option value="pokemon">Pokémon</option>
+          <option value="onepiece">One Piece</option>
+        </select>
+        <input class="field-input" id="formName" placeholder="Nom de la carte" />
+        <input class="field-input" id="formSet" placeholder="Set" />
+        <input class="field-input" id="formGrade" placeholder="Grade (PSA 9...)" />
+        <input class="field-input" id="formQty" type="number" placeholder="Qté" value="1" />
+        <input class="field-input" id="formPurchase" type="number" placeholder="Prix d'achat (€)" />
+      </div>
+      <p class="add-form-note">Ajoutée ici, la carte reste locale à ce navigateur pour ta compta. Pour qu'elle soit suivie automatiquement chaque jour, ajoute-la aussi dans cards.json sur GitHub.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="save-btn" id="formSave">Enregistrer</button>
+        <button class="cancel-btn" id="formCancel">Annuler</button>
+      </div>
     </div>
 
     <div class="list" id="cardList"></div>
 
-    <p class="footnote">
-      Données mises à jour automatiquement chaque jour via GitHub Actions (eBay, et bientôt Mercari / SNKR DUNK).
-    </p>
+    <p class="footnote">Prix de marché mis à jour automatiquement chaque jour via GitHub Actions. Prix d'achat/vente enregistrés dans ce navigateur pour ta comptabilité.</p>
   </div>
 
 <script>
+  const DATA_URL = "prices.json";
   const GAMES = {
-    pokemon: { label: "Pokémon", tint: "#F5C542" },
-    onepiece: { label: "One Piece", tint: "#4CC3E8" },
+    pokemon: { label: "Pokémon", tint: "#E8B23D" },
+    onepiece: { label: "One Piece", tint: "#C1453D" },
   };
 
-  let allCards = [];
+  let cards = [];
   let filter = "all";
+  let heldFilter = "held";
+  let search = "";
+  let sortBy = "value_desc";
+  let expandedId = null;
+  let editingId = null;
 
   function fmt(n) {
     if (n == null) return "—";
     return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
   }
-
+  function fmtSigned(n) {
+    if (n == null) return "—";
+    const s = n >= 0 ? "+" : "";
+    return s + new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+  }
   function pctChange(history) {
-    const withPrice = (history || []).filter(h => h.price != null);
-    if (withPrice.length < 2) return null;
-    const first = withPrice[0].price, last = withPrice[withPrice.length - 1].price;
+    const h = (history || []).filter((x) => x.price != null);
+    if (h.length < 2) return null;
+    const first = h[0].price, last = h[h.length - 1].price;
     if (!first) return null;
     return ((last - first) / first) * 100;
   }
 
-  function render() {
-    const visible = filter === "all" ? allCards : allCards.filter(c => c.game === filter);
-    const priced = allCards.filter(c => c.price != null);
-    const totalValue = priced.reduce((s, c) => s + c.price * (c.qty || 1), 0);
-    const totalStart = priced.reduce((s, c) => {
-      const withPrice = (c.history || []).filter(h => h.price != null);
-      return s + (withPrice.length ? withPrice[0].price : c.price) * (c.qty || 1);
-    }, 0);
-    const totalChangePct = totalStart ? ((totalValue - totalStart) / totalStart) * 100 : 0;
-
-    document.getElementById("heroValue").textContent = fmt(totalValue);
-    const changeEl = document.getElementById("heroChange");
-    const up = totalChangePct >= 0;
-    changeEl.style.color = up ? "#5FE0A8" : "#F26D6D";
-    changeEl.innerHTML = (up ? "▲ +" : "▼ ") + totalChangePct.toFixed(1) + "% sur la période";
-
-    const byGame = { pokemon: 0, onepiece: 0 };
-    priced.forEach(c => byGame[c.game] += c.price * (c.qty || 1));
-    const allocEl = document.getElementById("allocation");
-    allocEl.innerHTML = Object.entries(GAMES).map(([key, g]) => {
-      const val = byGame[key];
-      const pct = totalValue ? (val / totalValue) * 100 : 0;
-      return `<div class="alloc-row">
-        <div class="alloc-label-row">
-          <span style="display:flex;align-items:center;gap:6px">
-            <span style="width:8px;height:8px;border-radius:999px;background:${g.tint};display:inline-block"></span>
-            ${g.label}
-          </span>
-          <span style="color:#9A9CB0">${fmt(val)}</span>
-        </div>
-        <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:${pct}%;background:${g.tint}"></div></div>
-      </div>`;
-    }).join("");
-
-    document.getElementById("listCount").textContent = `Cartes (${visible.length})`;
-
-    const listEl = document.getElementById("cardList");
-    if (!visible.length) {
-      listEl.innerHTML = `<div class="empty">Aucune carte dans cette catégorie.</div>`;
-      return;
-    }
-    listEl.innerHTML = visible.map(c => {
-      const change = pctChange(c.history);
-      const hasPrice = c.price != null;
-      const changeUp = change != null && change >= 0;
-      return `<div class="row">
-        <span class="game-dot" style="background:${GAMES[c.game]?.tint || "#666"}"></span>
-        <div class="row-info">
-          <div class="row-name">${c.name}</div>
-          <div class="row-meta">${c.set || ""} · ${c.grade || ""} ${c.qty > 1 ? "· x" + c.qty : ""}</div>
-        </div>
-        <div class="row-price-col">
-          <div class="row-price">${hasPrice ? fmt(c.price * (c.qty || 1)) : "—"}</div>
-          ${hasPrice
-            ? (change != null
-                ? `<div class="row-change" style="color:${changeUp ? "#5FE0A8" : "#F26D6D"}">${changeUp ? "+" : ""}${change.toFixed(1)}%</div>`
-                : `<div class="row-nodata">1er relevé</div>`)
-            : `<div class="row-nodata">en attente</div>`}
-        </div>
-      </div>`;
-    }).join("");
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem("cards_local_v1");
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveLocal(localData) {
+    try { localStorage.setItem("cards_local_v1", JSON.stringify(localData)); } catch (e) {}
   }
 
-  document.querySelectorAll(".tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      filter = btn.dataset.filter;
-      render();
-    });
-  });
+  function mergeWithLocal(remoteCards) {
+    const local = loadLocal();
+    return remoteCards.map((c) => ({
+      ...c,
+      purchasePrice: local[c.id]?.purchasePrice ?? null,
+      sold: local[c.id]?.sold ?? false,
+      salePrice: local[c.id]?.salePrice ?? null,
+    }));
+  }
+
+  function updateLocalCard(id, patch) {
+    const local = loadLocal();
+    local[id] = { ...local[id], ...patch };
+    saveLocal(local);
+    const c = cards.find((x) => x.id === id);
+    if (c) Object.assign(c, patch);
+  }
 
   async function sync() {
     const btn = document.getElementById("syncBtn");
@@ -221,10 +274,10 @@
     label.textContent = "Synchro...";
     errEl.style.display = "none";
     try {
-      const res = await fetch("prices.json?t=" + Date.now(), { cache: "no-store" });
-      if (!res.ok) throw new Error("prices.json introuvable (le workflow a-t-il déjà tourné ?)");
+      const res = await fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!res.ok) throw new Error("prices.json introuvable");
       const data = await res.json();
-      allCards = data.cards || [];
+      cards = mergeWithLocal(data.cards || []);
       const updatedAt = data.updated_at ? new Date(data.updated_at) : new Date();
       label.textContent = "Mis à jour " + updatedAt.toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
       render();
@@ -237,7 +290,326 @@
     }
   }
 
+  function sparklinePath(points, w, h) {
+    if (points.length < 2) return "";
+    const values = points.map((p) => p.value ?? p.price);
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = max - min || 1;
+    return values.map((v, i) => {
+      const x = (i / (values.length - 1)) * w;
+      const y = h - ((v - min) / range) * h;
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+  }
+
+  function renderWatermark() {
+    const svg = document.getElementById("watermark");
+    let html = "";
+    if (filter === "all" || filter === "pokemon") {
+      const op = filter === "pokemon" ? 0.09 : 0.05;
+      html += `<g opacity="${op}">
+        <circle cx="150" cy="55" r="70" stroke="#E8B23D" stroke-width="1.5" fill="none"/>
+        <line x1="80" y1="55" x2="220" y2="55" stroke="#E8B23D" stroke-width="1.5"/>
+        <circle cx="150" cy="55" r="10" stroke="#E8B23D" stroke-width="1.5" fill="#0B0C14"/>
+      </g>`;
+    }
+    if (filter === "all" || filter === "onepiece") {
+      const op = filter === "onepiece" ? 0.09 : 0.05;
+      let lines = "";
+      [0, 45, 90, 135].forEach((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        const x1 = 40 - 55 * Math.cos(rad), y1 = 140 - 55 * Math.sin(rad);
+        const x2 = 40 + 55 * Math.cos(rad), y2 = 140 + 55 * Math.sin(rad);
+        lines += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#C1453D" stroke-width="1"/>`;
+      });
+      html += `<g opacity="${op}">
+        <circle cx="40" cy="140" r="55" stroke="#C1453D" stroke-width="1.2" fill="none"/>
+        ${lines}
+        <circle cx="40" cy="140" r="4" fill="#C1453D"/>
+      </g>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  function render() {
+    renderWatermark();
+
+    const held = cards.filter((c) => !c.sold);
+    const sold = cards.filter((c) => c.sold);
+
+    const totalValue = held.reduce((s, c) => s + (c.price || 0) * c.qty, 0);
+    const totalInvested = held.reduce((s, c) => s + (c.purchasePrice || 0) * c.qty, 0);
+    const unrealizedPL = held.reduce((s, c) => (c.purchasePrice == null || c.price == null) ? s : s + (c.price - c.purchasePrice) * c.qty, 0);
+    const realizedPL = sold.reduce((s, c) => (c.purchasePrice == null || c.salePrice == null) ? s : s + (c.salePrice - c.purchasePrice) * c.qty, 0);
+    const totalStart = held.reduce((s, c) => {
+      const h = (c.history || []).filter((x) => x.price != null);
+      const startPrice = h.length ? h[0].price : c.price;
+      return s + (startPrice || 0) * c.qty;
+    }, 0);
+    const totalChangePct = totalStart ? ((totalValue - totalStart) / totalStart) * 100 : 0;
+
+    document.getElementById("heroValue").textContent = fmt(totalValue);
+    const changeEl = document.getElementById("heroChange");
+    const up = totalChangePct >= 0;
+    changeEl.style.color = up ? "#4ADE9A" : "#F06464";
+    changeEl.innerHTML = (up ? "▲ +" : "▼ ") + totalChangePct.toFixed(1) + "% sur la période";
+
+    document.getElementById("statInvested").textContent = fmt(totalInvested);
+    const unrEl = document.getElementById("statUnrealized");
+    unrEl.textContent = fmtSigned(unrealizedPL);
+    unrEl.style.color = unrealizedPL >= 0 ? "#4ADE9A" : "#F06464";
+    const relEl = document.getElementById("statRealized");
+    relEl.textContent = fmtSigned(realizedPL);
+    relEl.style.color = realizedPL >= 0 ? "#4ADE9A" : "#F06464";
+    document.getElementById("statCount").textContent = held.length;
+
+    const dateSet = new Set();
+    held.forEach((c) => (c.history || []).forEach((h) => dateSet.add(h.date)));
+    const dates = Array.from(dateSet).sort();
+    const trend = dates.map((date) => {
+      let total = 0;
+      held.forEach((c) => {
+        const hist = c.history || [];
+        let point = hist.find((h) => h.date === date);
+        if (!point) point = hist.filter((h) => h.date < date).slice(-1)[0];
+        if (point) total += point.price * c.qty;
+      });
+      return { value: Math.round(total) };
+    });
+    const chartEl = document.getElementById("heroChart");
+    if (trend.length > 1) {
+      const path = sparklinePath(trend, 140, 60);
+      chartEl.innerHTML = `<svg viewBox="0 0 140 60" preserveAspectRatio="none">
+        <defs><linearGradient id="holoFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6EE7F0" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#6EE7F0" stop-opacity="0"/>
+        </linearGradient></defs>
+        <path d="${path} L140,60 L0,60 Z" fill="url(#holoFill)"/>
+        <path d="${path}" stroke="#6EE7F0" stroke-width="2" fill="none"/>
+      </svg>`;
+    } else {
+      chartEl.innerHTML = "";
+    }
+
+    const byGame = { pokemon: 0, onepiece: 0 };
+    held.forEach((c) => (byGame[c.game] = (byGame[c.game] || 0) + (c.price || 0) * c.qty));
+    document.getElementById("allocation").innerHTML = Object.entries(GAMES).map(([key, g]) => {
+      const val = byGame[key] || 0;
+      const pct = totalValue ? (val / totalValue) * 100 : 0;
+      return `<div>
+        <div class="alloc-label-row">
+          <span style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:999px;background:${g.tint};display:inline-block"></span>${g.label}
+          </span>
+          <span style="color:#9A9CB0">${fmt(val)}</span>
+        </div>
+        <div class="alloc-bar-bg"><div class="alloc-bar-fill" style="width:${pct}%;background:${g.tint}"></div></div>
+      </div>`;
+    }).join("");
+
+    let list = heldFilter === "held" ? held : heldFilter === "sold" ? sold : cards;
+    if (filter !== "all") list = list.filter((c) => c.game === filter);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter((c) => c.name.toLowerCase().includes(q) || (c.set || "").toLowerCase().includes(q));
+    }
+    list = [...list].sort((a, b) => {
+      const av = (a.price || 0) * a.qty, bv = (b.price || 0) * b.qty;
+      const ac = pctChange(a.history) || 0, bc = pctChange(b.history) || 0;
+      switch (sortBy) {
+        case "value_desc": return bv - av;
+        case "value_asc": return av - bv;
+        case "change_desc": return bc - ac;
+        case "change_asc": return ac - bc;
+        case "name": return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+    const listEl = document.getElementById("cardList");
+    if (!list.length) {
+      listEl.innerHTML = `<p class="empty">Aucune carte ne correspond.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = list.map((c) => {
+      const change = pctChange(c.history);
+      const up2 = change != null && change >= 0;
+      const nbSources = Object.keys(c.sources || {}).length;
+      const expanded = expandedId === c.id;
+      const editing = editingId === c.id;
+      const cardPL = c.sold
+        ? (c.salePrice != null && c.purchasePrice != null ? (c.salePrice - c.purchasePrice) * c.qty : null)
+        : (c.price != null && c.purchasePrice != null ? (c.price - c.purchasePrice) * c.qty : null);
+
+      let miniChartHtml = "";
+      if (c.history && c.history.length > 1) {
+        const path = sparklinePath(c.history, 300, 50);
+        miniChartHtml = `<div class="mini-chart"><svg viewBox="0 0 300 50" preserveAspectRatio="none">
+          <path d="${path}" stroke="${up2 ? "#4ADE9A" : "#F06464"}" stroke-width="1.5" fill="none"/>
+        </svg></div>`;
+      }
+
+      return `<div class="slab" data-id="${c.id}">
+        <div class="slab-header">
+          <span class="grade-tag" style="border-color:${GAMES[c.game]?.tint}">
+            <span class="grade-dot" style="background:${GAMES[c.game]?.tint}"></span>${c.grade || "—"}
+          </span>
+          ${c.sold ? `<span class="sold-tag">Vendue</span>` : ""}
+          ${nbSources > 0 ? `<span class="source-tag" title="${Object.keys(c.sources).join(", ")}">${nbSources} source${nbSources > 1 ? "s" : ""}</span>` : ""}
+        </div>
+        <div class="slab-body" data-toggle="${c.id}">
+          <div class="row-info">
+            <div class="row-name">${c.name}</div>
+            <div class="row-meta">${c.set || ""}${c.qty > 1 ? ` · x${c.qty}` : ""}</div>
+          </div>
+          <div class="row-price-col">
+            <div class="row-price">${fmt((c.price || 0) * c.qty)}</div>
+            ${change != null
+              ? `<div class="row-change" style="color:${up2 ? "#4ADE9A" : "#F06464"}">${up2 ? "+" : ""}${change.toFixed(1)}%</div>`
+              : `<div class="row-nodata">${c.price == null ? "en attente" : "1er relevé"}</div>`}
+          </div>
+          <svg class="chevron ${expanded ? "open" : ""}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5C5E72" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        ${expanded ? `<div class="expand-panel">
+          ${miniChartHtml}
+          <div class="pl-grid ${editing ? "hidden" : ""}">
+            <div><p class="pl-label">Prix d'achat</p><p class="pl-value">${fmt(c.purchasePrice)}</p></div>
+            ${c.sold ? `<div><p class="pl-label">Prix de vente</p><p class="pl-value">${fmt(c.salePrice)}</p></div>` : ""}
+            <div><p class="pl-label">P&amp;L</p><p class="pl-value" style="color:${cardPL == null ? "#7B7D92" : cardPL >= 0 ? "#4ADE9A" : "#F06464"}">${cardPL == null ? "—" : fmtSigned(cardPL)}</p></div>
+            <button class="edit-btn" data-edit="${c.id}">Modifier</button>
+          </div>
+          <div class="edit-grid ${editing ? "open" : ""}">
+            <label class="edit-label">Prix d'achat (€)<input class="field-input" data-field="purchasePrice" data-id="${c.id}" type="number" value="${c.purchasePrice ?? ""}"></label>
+            <label class="edit-label-checkbox"><input type="checkbox" data-field="sold" data-id="${c.id}" ${c.sold ? "checked" : ""}> Carte vendue</label>
+            <label class="edit-label" style="${c.sold ? "" : "display:none"}" data-sale-field>Prix de vente (€)<input class="field-input" data-field="salePrice" data-id="${c.id}" type="number" value="${c.salePrice ?? ""}"></label>
+            <div style="display:flex;gap:8px;">
+              <button class="save-btn" data-save="${c.id}">Valider</button>
+              <button class="cancel-btn" data-cancel="${c.id}">Annuler</button>
+            </div>
+          </div>
+          <button class="delete-btn" data-delete="${c.id}">Retirer de la collection</button>
+        </div>` : ""}
+      </div>`;
+    }).join("");
+
+    attachRowEvents();
+  }
+
+  function attachRowEvents() {
+    document.querySelectorAll("[data-toggle]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.dataset.toggle;
+        expandedId = expandedId === id ? null : id;
+        editingId = null;
+        render();
+      });
+    });
+    document.querySelectorAll("[data-edit]").forEach((el) => {
+      el.addEventListener("click", (e) => { e.stopPropagation(); editingId = el.dataset.edit; render(); });
+    });
+    document.querySelectorAll("[data-cancel]").forEach((el) => {
+      el.addEventListener("click", (e) => { e.stopPropagation(); editingId = null; render(); });
+    });
+    document.querySelectorAll("[data-delete]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cards = cards.filter((c) => c.id !== el.dataset.delete);
+        render();
+      });
+    });
+    document.querySelectorAll('[data-field="sold"]').forEach((el) => {
+      el.addEventListener("change", (e) => {
+        e.stopPropagation();
+        const panel = el.closest(".edit-grid").querySelector("[data-sale-field]");
+        panel.style.display = el.checked ? "" : "none";
+      });
+      el.addEventListener("click", (e) => e.stopPropagation());
+    });
+    document.querySelectorAll(".field-input").forEach((el) => {
+      el.addEventListener("click", (e) => e.stopPropagation());
+    });
+    document.querySelectorAll("[data-save]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const id = el.dataset.save;
+        const panel = el.closest(".expand-panel");
+        const purchasePrice = panel.querySelector('[data-field="purchasePrice"]').value;
+        const sold = panel.querySelector('[data-field="sold"]').checked;
+        const salePrice = panel.querySelector('[data-field="salePrice"]')?.value ?? "";
+        updateLocalCard(id, {
+          purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null,
+          sold,
+          salePrice: salePrice !== "" ? parseFloat(salePrice) : null,
+        });
+        editingId = null;
+        render();
+      });
+    });
+  }
+
+  function exportCSV() {
+    const rows = [["Nom", "Set", "Grade", "Jeu", "Quantite", "Prix actuel (EUR)", "Prix achat (EUR)", "Vendue", "Prix vente (EUR)", "P&L (EUR)"]];
+    cards.forEach((c) => {
+      const pl = c.sold
+        ? (c.salePrice != null && c.purchasePrice != null ? (c.salePrice - c.purchasePrice) * c.qty : "")
+        : (c.price != null && c.purchasePrice != null ? (c.price - c.purchasePrice) * c.qty : "");
+      rows.push([c.name, c.set || "", c.grade || "", GAMES[c.game]?.label || c.game, c.qty, c.price ?? "", c.purchasePrice ?? "", c.sold ? "Oui" : "Non", c.salePrice ?? "", pl]);
+    });
+    const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "collection.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
   document.getElementById("syncBtn").addEventListener("click", sync);
+  document.getElementById("exportBtn").addEventListener("click", exportCSV);
+  document.getElementById("searchInput").addEventListener("input", (e) => { search = e.target.value; render(); });
+  document.getElementById("sortSelect").addEventListener("change", (e) => { sortBy = e.target.value; render(); });
+  document.getElementById("gameTabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".tab");
+    if (!btn) return;
+    filter = btn.dataset.filter;
+    document.querySelectorAll("#gameTabs .tab").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  });
+  document.getElementById("heldTabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".tab");
+    if (!btn) return;
+    heldFilter = btn.dataset.held;
+    document.querySelectorAll("#heldTabs .tab").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  });
+  document.getElementById("addToggleBtn").addEventListener("click", () => {
+    document.getElementById("addForm").classList.toggle("open");
+  });
+  document.getElementById("formCancel").addEventListener("click", () => {
+    document.getElementById("addForm").classList.remove("open");
+  });
+  document.getElementById("formSave").addEventListener("click", () => {
+    const name = document.getElementById("formName").value.trim();
+    if (!name) return;
+    const id = "c" + Date.now();
+    const game = document.getElementById("formGame").value;
+    const set = document.getElementById("formSet").value.trim();
+    const grade = document.getElementById("formGrade").value.trim() || "—";
+    const qty = parseInt(document.getElementById("formQty").value) || 1;
+    const purchasePrice = document.getElementById("formPurchase").value;
+    cards.push({ id, game, name, set, grade, qty, price: null, sources: {}, history: [], sold: false, salePrice: null, purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null });
+    updateLocalCard(id, { purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null, sold: false, salePrice: null });
+    document.getElementById("formName").value = "";
+    document.getElementById("formSet").value = "";
+    document.getElementById("formGrade").value = "";
+    document.getElementById("formQty").value = "1";
+    document.getElementById("formPurchase").value = "";
+    document.getElementById("addForm").classList.remove("open");
+    render();
+  });
+
   sync();
 </script>
 </body>
