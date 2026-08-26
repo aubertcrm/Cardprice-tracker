@@ -25,6 +25,7 @@ jobs:
         env:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          PRICECHARTING_TOKEN: ${{ secrets.PRICECHARTING_TOKEN }}
         run: python update_prices.py
 
       - name: Commit et push prices.json
@@ -33,5 +34,4 @@ jobs:
           git config user.email "actions@github.com"
           git add prices.json
           git diff --cached --quiet || git commit -m "Mise a jour des cotes ($(date -u +%Y-%m-%d))"
-          git pull --rebase origin main
           git push
