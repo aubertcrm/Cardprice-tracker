@@ -20,14 +20,14 @@
     "grade": "PSA 10",
     "qty": 1
   },
-  {
-    "id": "c3",
-    "game": "onepiece",
-    "name": "Luffy Manga",
-    "set": "",
-    "year": 2025,
-    "language": "JP",
-    "grade": "PSA 10",
-    "qty": 1
-  }
+ {
+  "id": "c3",
+  "game": "onepiece",
+  "name": "Luffy Manga",
+  "set": "Carrying on His Will",
+  "card_number": "OP13-118",
+  "language": "JP",
+  "grade": "PSA 10",
+  "qty": 1
+}
 ]
