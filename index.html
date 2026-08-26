@@ -333,7 +333,28 @@
       const res = await fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" });
       if (!res.ok) throw new Error("prices.json introuvable");
       const data = await res.json();
-      cards = mergeWithLocal(data.cards || []);
+      const local = loadLocal();
+      const merged = {};
+      cards.forEach((c) => (merged[c.id] = c)); // garde les cartes locales pas encore dans prices.json
+      (data.cards || []).forEach((remote) => {
+        const localExtra = local[remote.id] || {};
+        const prevLocal = merged[remote.id] || {};
+        merged[remote.id] = {
+          id: remote.id,
+          game: remote.game,
+          name: remote.name,
+          set: remote.set,
+          grade: remote.grade,
+          qty: remote.qty || 1,
+          price: remote.price,
+          sources: remote.sources || {},
+          history: remote.history || [],
+          purchasePrice: localExtra.purchasePrice ?? prevLocal.purchasePrice ?? null,
+          sold: localExtra.sold ?? prevLocal.sold ?? false,
+          salePrice: localExtra.salePrice ?? prevLocal.salePrice ?? null,
+        };
+      });
+      cards = Object.values(merged);
       const updatedAt = data.updated_at ? new Date(data.updated_at) : new Date();
       label.textContent = "Mis à jour " + updatedAt.toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
       render();
