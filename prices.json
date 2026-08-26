@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-26T11:31:40.519250+00:00",
+  "updated_at": "2026-08-26T11:34:36.058436+00:00",
   "cards": [
     {
       "id": "c1",
@@ -80,6 +80,10 @@
         {
           "date": "2026-08-26",
           "price": 3858.69
+        },
+        {
+          "date": "2026-08-26",
+          "price": 3858.69
         }
       ]
     },
@@ -102,19 +106,30 @@
         {
           "date": "2026-08-26",
           "price": 335.38
+        },
+        {
+          "date": "2026-08-26",
+          "price": 335.38
         }
       ]
     },
     {
       "id": "c3",
       "game": "onepiece",
-      "name": "Luffy OP13-118 Manga Alt Art",
+      "name": "Luffy Manga",
       "set": "",
       "grade": "PSA 10",
       "qty": 1,
-      "price": null,
-      "sources": {},
-      "history": []
+      "price": 2619.62,
+      "sources": {
+        "ebay_active": 2619.62
+      },
+      "history": [
+        {
+          "date": "2026-08-26",
+          "price": 2619.62
+        }
+      ]
     }
   ]
 }
