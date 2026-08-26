@@ -124,11 +124,27 @@
         </button>
         <p class="sync-error" id="syncError" style="display:none"></p>
       </div>
+      <button class="export-btn" id="settingsBtn" title="Configurer l'accès GitHub">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
       <button class="export-btn" id="exportBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Export CSV
       </button>
     </header>
+
+    <div class="add-form" id="settingsPanel">
+      <p class="add-form-note" style="margin:0 0 10px;">
+        Colle ici ton token GitHub (fine-grained, permission "Contents: Read and write" sur ce dépôt uniquement).
+        Il est stocké dans ce navigateur seulement, jamais envoyé ailleurs qu'à GitHub.
+      </p>
+      <input class="field-input" id="tokenInput" type="password" placeholder="github_pat_..." />
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="save-btn" id="tokenSave">Enregistrer</button>
+        <button class="cancel-btn" id="tokenClear">Supprimer le token</button>
+      </div>
+      <p class="sync-error" id="tokenStatus" style="display:none; margin-top:8px;"></p>
+    </div>
 
     <section class="hero">
       <svg class="watermark" id="watermark" viewBox="0 0 200 200" fill="none"></svg>
@@ -191,14 +207,18 @@
         <input class="field-input" id="formName" placeholder="Nom de la carte" />
         <input class="field-input" id="formSet" placeholder="Set" />
         <input class="field-input" id="formGrade" placeholder="Grade (PSA 9...)" />
+        <input class="field-input" id="formYear" type="number" placeholder="Année (1999...)" />
+        <input class="field-input" id="formCardNumber" placeholder="Numéro (4/102)" />
+        <input class="field-input" id="formLanguage" placeholder="Langue (EN, JP, FR...)" value="EN" />
         <input class="field-input" id="formQty" type="number" placeholder="Qté" value="1" />
         <input class="field-input" id="formPurchase" type="number" placeholder="Prix d'achat (€)" />
       </div>
-      <p class="add-form-note">Ajoutée ici, la carte reste locale à ce navigateur pour ta compta. Pour qu'elle soit suivie automatiquement chaque jour, ajoute-la aussi dans cards.json sur GitHub.</p>
+      <p class="add-form-note">La carte est écrite directement dans cards.json sur GitHub. Son prix de marché apparaîtra "en attente" jusqu'au prochain passage du script (automatique chaque nuit, ou lance-le manuellement dans Actions).</p>
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button class="save-btn" id="formSave">Enregistrer</button>
         <button class="cancel-btn" id="formCancel">Annuler</button>
       </div>
+      <p class="sync-error" id="addStatus" style="display:none; margin-top:8px;"></p>
     </div>
 
     <div class="list" id="cardList"></div>
@@ -208,6 +228,9 @@
 
 <script>
   const DATA_URL = "prices.json";
+  const REPO_OWNER = "aubertcrm";
+  const REPO_NAME = "Cardprice-tracker";
+  const BRANCH = "main";
   const GAMES = {
     pokemon: { label: "Pokémon", tint: "#E8B23D" },
     onepiece: { label: "One Piece", tint: "#C1453D" },
@@ -246,6 +269,39 @@
   }
   function saveLocal(localData) {
     try { localStorage.setItem("cards_local_v1", JSON.stringify(localData)); } catch (e) {}
+  }
+
+  function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode("0x" + p1)));
+  }
+  function b64DecodeUnicode(str) {
+    return decodeURIComponent(atob(str.replace(/\n/g, "")).split("").map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join(""));
+  }
+
+  async function pushCardToGitHub(newCard) {
+    const token = localStorage.getItem("gh_pat");
+    if (!token) throw new Error("Configure d'abord ton token GitHub (bouton engrenage).");
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/cards.json`;
+    const getRes = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+    if (!getRes.ok) throw new Error("Lecture de cards.json impossible (" + getRes.status + ")");
+    const getData = await getRes.json();
+    const currentArr = JSON.parse(b64DecodeUnicode(getData.content));
+    currentArr.push(newCard);
+    const newContent = JSON.stringify(currentArr, null, 2);
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Ajout de ${newCard.name} via le dashboard`,
+        content: b64EncodeUnicode(newContent),
+        sha: getData.sha,
+        branch: BRANCH,
+      }),
+    });
+    if (!putRes.ok) {
+      const err = await putRes.json().catch(() => ({}));
+      throw new Error(err.message || ("Erreur GitHub " + putRes.status));
+    }
   }
 
   function mergeWithLocal(remoteCards) {
@@ -584,30 +640,80 @@
     btn.classList.add("active");
     render();
   });
+  document.getElementById("settingsBtn").addEventListener("click", () => {
+    const panel = document.getElementById("settingsPanel");
+    panel.classList.toggle("open");
+    const existing = localStorage.getItem("gh_pat");
+    document.getElementById("tokenInput").value = existing ? "••••••••••••••••" : "";
+  });
+  document.getElementById("tokenSave").addEventListener("click", () => {
+    const val = document.getElementById("tokenInput").value.trim();
+    const statusEl = document.getElementById("tokenStatus");
+    if (!val || val.startsWith("••")) return;
+    localStorage.setItem("gh_pat", val);
+    statusEl.style.color = "#4ADE9A";
+    statusEl.textContent = "Token enregistré.";
+    statusEl.style.display = "block";
+    document.getElementById("tokenInput").value = "••••••••••••••••";
+  });
+  document.getElementById("tokenClear").addEventListener("click", () => {
+    localStorage.removeItem("gh_pat");
+    document.getElementById("tokenInput").value = "";
+    const statusEl = document.getElementById("tokenStatus");
+    statusEl.style.color = "#F06464";
+    statusEl.textContent = "Token supprimé.";
+    statusEl.style.display = "block";
+  });
+
   document.getElementById("addToggleBtn").addEventListener("click", () => {
     document.getElementById("addForm").classList.toggle("open");
   });
   document.getElementById("formCancel").addEventListener("click", () => {
     document.getElementById("addForm").classList.remove("open");
   });
-  document.getElementById("formSave").addEventListener("click", () => {
+  document.getElementById("formSave").addEventListener("click", async () => {
     const name = document.getElementById("formName").value.trim();
+    const statusEl = document.getElementById("addStatus");
     if (!name) return;
+
     const id = "c" + Date.now();
     const game = document.getElementById("formGame").value;
     const set = document.getElementById("formSet").value.trim();
     const grade = document.getElementById("formGrade").value.trim() || "—";
+    const year = document.getElementById("formYear").value;
+    const cardNumber = document.getElementById("formCardNumber").value.trim();
+    const language = document.getElementById("formLanguage").value.trim() || "EN";
     const qty = parseInt(document.getElementById("formQty").value) || 1;
     const purchasePrice = document.getElementById("formPurchase").value;
-    cards.push({ id, game, name, set, grade, qty, price: null, sources: {}, history: [], sold: false, salePrice: null, purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null });
-    updateLocalCard(id, { purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null, sold: false, salePrice: null });
-    document.getElementById("formName").value = "";
-    document.getElementById("formSet").value = "";
-    document.getElementById("formGrade").value = "";
-    document.getElementById("formQty").value = "1";
-    document.getElementById("formPurchase").value = "";
-    document.getElementById("addForm").classList.remove("open");
-    render();
+
+    const cardsJsonEntry = {
+      id, game, name, set,
+      year: year ? parseInt(year) : undefined,
+      card_number: cardNumber || undefined,
+      language, grade, qty,
+    };
+
+    const btn = document.getElementById("formSave");
+    btn.disabled = true;
+    btn.textContent = "Envoi...";
+    statusEl.style.display = "none";
+    try {
+      await pushCardToGitHub(cardsJsonEntry);
+      cards.push({ id, game, name, set, grade, qty, price: null, sources: {}, history: [], sold: false, salePrice: null, purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null });
+      updateLocalCard(id, { purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null, sold: false, salePrice: null });
+      ["formName", "formSet", "formGrade", "formYear", "formCardNumber", "formPurchase"].forEach((f) => document.getElementById(f).value = "");
+      document.getElementById("formLanguage").value = "EN";
+      document.getElementById("formQty").value = "1";
+      document.getElementById("addForm").classList.remove("open");
+      render();
+    } catch (e) {
+      statusEl.style.color = "#F06464";
+      statusEl.textContent = e.message;
+      statusEl.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Enregistrer";
+    }
   });
 
   sync();
