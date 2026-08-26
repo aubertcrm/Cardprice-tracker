@@ -1,9 +1,11 @@
 """
-Met a jour la cote de chaque carte listee dans cards.json.
+Met a jour la cote de chaque carte listee dans cards.json en moyennant
+plusieurs sources.
 
 Sources interrogees :
-- PriceCharting (catalogue par ID de produit - source payante, la plus fiable,
-  utilisee seule quand disponible pour une carte)
+- PriceCharting (catalogue - source payante, la plus fiable, utilisee seule
+  quand disponible). Identifiable par pricecharting_id (exact) ou
+  pricecharting_url (URL de la page produit, resolue automatiquement).
 - eBay, ventes reussies (scraping de la page "Sold Items")
 - eBay, annonces actives (Browse API officielle, cle gratuite)
 - Mercari (scraping best-effort)
@@ -12,7 +14,7 @@ Sources interrogees :
 - Yuyu-tei (scraping best-effort)
 
 Les sources eBay/Mercari/SNKR DUNK/Cardrush/Yuyu-tei ne servent que de repli
-pour les cartes qui n'ont pas de pricecharting_id renseigne dans cards.json.
+pour les cartes qui n'ont ni pricecharting_id ni pricecharting_url.
 
 Tous les prix sont convertis en EUR. Un ajustement global (GLOBAL_PRICE_ADJUSTMENT)
 est applique a toutes les cartes, sauf si une carte definit son propre
@@ -29,6 +31,7 @@ import os
 import re
 import statistics
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -124,10 +127,56 @@ PRICECHARTING_GRADE_FIELDS = {
 }
 
 
+def _slugify(text):
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def resolve_pricecharting_id_from_url(url):
+    """A partir de l'URL d'une page produit PriceCharting (celle qu'on visite
+    dans le navigateur), retrouve automatiquement l'ID du produit via une
+    recherche, en comparant les slugs pour prendre la bonne correspondance.
+    """
+    try:
+        path = urlparse(url).path.strip("/").split("/")
+        if len(path) < 2:
+            return None
+        console_slug, product_slug = path[-2], path[-1]
+        query = product_slug.replace("-", " ")
+
+        resp = requests.get(
+            "https://www.pricecharting.com/api/products",
+            params={"t": PRICECHARTING_TOKEN, "q": query},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        if data.get("status") != "success":
+            return None
+
+        products = data.get("products", [])
+        target_slug = _slugify(product_slug)
+        for p in products:
+            candidate_slug = _slugify(p.get("product-name", ""))
+            if candidate_slug == target_slug:
+                print(f"Debug PriceCharting: URL resolue vers '{p.get('product-name')}' (id={p['id']})")
+                return p["id"]
+
+        if products:
+            print(f"Debug PriceCharting: pas de correspondance exacte, utilise le 1er resultat '{products[0].get('product-name')}' (id={products[0]['id']})")
+            return products[0]["id"]
+        return None
+    except Exception as e:
+        print(f"Erreur resolution URL PriceCharting: {e}")
+        return None
+
+
 def price_from_pricecharting(card, rates):
     if not PRICECHARTING_TOKEN:
         return []
     product_id = card.get("pricecharting_id")
+    if not product_id and card.get("pricecharting_url"):
+        product_id = resolve_pricecharting_id_from_url(card["pricecharting_url"])
     if not product_id:
         return []
     try:
