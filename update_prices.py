@@ -331,7 +331,7 @@ def main():
 
         print(f"{card['name']}: {price} EUR | sources: {sources}")
 
-        updated.append(
+              updated.append(
             {
                 "id": card["id"],
                 "game": card["game"],
@@ -340,6 +340,7 @@ def main():
                 "grade": card["grade"],
                 "qty": card.get("qty", 1),
                 "price": price,
+                "sources": sources,
                 "history": history,
             }
         )
