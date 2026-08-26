@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-26T11:18:42.051798+00:00",
+  "updated_at": "2026-08-26T11:22:19.356256+00:00",
   "cards": [
     {
       "id": "c1",
@@ -72,19 +72,30 @@
         {
           "date": "2026-08-26",
           "price": 3858.69
+        },
+        {
+          "date": "2026-08-26",
+          "price": 3858.69
         }
       ]
     },
     {
       "id": "c2",
       "game": "pokemon",
-      "name": "Umbreon",
-      "set": "Scarlet & Violet Promo",
+      "name": "Umbreon Yu Nagaba",
+      "set": "",
       "grade": "PSA 10",
       "qty": 1,
-      "price": null,
-      "sources": {},
-      "history": []
+      "price": 335.38,
+      "sources": {
+        "ebay_active": 335.38
+      },
+      "history": [
+        {
+          "date": "2026-08-26",
+          "price": 335.38
+        }
+      ]
     }
   ]
 }
