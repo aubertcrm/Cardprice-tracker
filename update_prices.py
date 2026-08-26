@@ -3,9 +3,9 @@ Met a jour la cote de chaque carte listee dans cards.json en moyennant
 plusieurs sources.
 
 Sources interrogees :
-- PriceCharting (catalogue - source payante, la plus fiable, utilisee seule
-  quand disponible). Identifiable par pricecharting_id (exact) ou
-  pricecharting_url (URL de la page produit, resolue automatiquement).
+- PriceCharting (catalogue par ID de produit - le plus fiable, source payante).
+  Identifiable par pricecharting_id (exact) ou pricecharting_url (URL de la
+  page produit, resolue automatiquement en comparant nom ET set).
 - eBay, ventes reussies (scraping de la page "Sold Items")
 - eBay, annonces actives (Browse API officielle, cle gratuite)
 - Mercari (scraping best-effort)
@@ -132,9 +132,10 @@ def _slugify(text):
 
 
 def resolve_pricecharting_id_from_url(url):
-    """A partir de l'URL d'une page produit PriceCharting (celle qu'on visite
-    dans le navigateur), retrouve automatiquement l'ID du produit via une
-    recherche, en comparant les slugs pour prendre la bonne correspondance.
+    """A partir de l'URL d'une page produit PriceCharting, retrouve
+    automatiquement l'ID du produit via une recherche, en comparant nom ET
+    set pour eviter de confondre des variantes proches (ex: version
+    "Japanese" vs version normale, qui partagent le meme nom de carte).
     """
     try:
         path = urlparse(url).path.strip("/").split("/")
@@ -156,10 +157,18 @@ def resolve_pricecharting_id_from_url(url):
 
         products = data.get("products", [])
         target_slug = _slugify(product_slug)
+        target_console_slug = _slugify(console_slug)
+
+        # 1er passage : exige que le nom ET le set correspondent (le plus fiable)
         for p in products:
-            candidate_slug = _slugify(p.get("product-name", ""))
-            if candidate_slug == target_slug:
-                print(f"Debug PriceCharting: URL resolue vers '{p.get('product-name')}' (id={p['id']})")
+            if _slugify(p.get("product-name", "")) == target_slug and _slugify(p.get("console-name", "")) == target_console_slug:
+                print(f"Debug PriceCharting: URL resolue vers '{p.get('product-name')}' / '{p.get('console-name')}' (id={p['id']})")
+                return p["id"]
+
+        # 2e passage : a defaut, nom de carte identique seul (moins fiable)
+        for p in products:
+            if _slugify(p.get("product-name", "")) == target_slug:
+                print(f"Debug PriceCharting: correspondance nom seul (set different) '{p.get('product-name')}' / '{p.get('console-name')}' (id={p['id']})")
                 return p["id"]
 
         if products:
