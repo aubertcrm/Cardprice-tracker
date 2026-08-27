@@ -224,7 +224,7 @@
 
     <div class="list" id="cardList"></div>
 
-    <p class="footnote">Prix de marché mis à jour automatiquement chaque jour via GitHub Actions. Prix d'achat/vente enregistrés dans ce navigateur pour ta comptabilité.</p>
+    <p class="footnote">Prix de marché mis à jour automatiquement chaque jour via GitHub Actions. Prix d'achat/vente enregistrés dans cards.json sur GitHub, visibles sur tous tes appareils.</p>
   </div>
 
 <script>
@@ -232,6 +232,7 @@
   const REPO_OWNER = "aubertcrm";
   const REPO_NAME = "Cardprice-tracker";
   const BRANCH = "main";
+  const CARDS_RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/refs/heads/${BRANCH}/cards.json`;
   const GAMES = {
     pokemon: { label: "Pokémon", tint: "#E8B23D" },
     onepiece: { label: "One Piece", tint: "#C1453D" },
@@ -305,17 +306,42 @@
     }
   }
 
-  function mergeWithLocal(remoteCards) {
-    const local = loadLocal();
-    return remoteCards.map((c) => ({
-      ...c,
-      purchasePrice: local[c.id]?.purchasePrice ?? null,
-      sold: local[c.id]?.sold ?? false,
-      salePrice: local[c.id]?.salePrice ?? null,
-    }));
+  async function updateCardInGitHub(id, patch) {
+    const token = localStorage.getItem("gh_pat");
+    if (!token) throw new Error("Configure d'abord ton token GitHub (bouton engrenage).");
+    const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/cards.json`;
+    const getRes = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+    if (!getRes.ok) throw new Error("Lecture de cards.json impossible (" + getRes.status + ")");
+    const getData = await getRes.json();
+    const currentArr = JSON.parse(b64DecodeUnicode(getData.content));
+    const idx = currentArr.findIndex((c) => c.id === id);
+    if (idx === -1) throw new Error("Carte introuvable dans cards.json");
+    currentArr[idx] = { ...currentArr[idx], ...patch };
+    const newContent = JSON.stringify(currentArr, null, 2);
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { Authorization: `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Mise a jour de ${currentArr[idx].name} via le dashboard`,
+        content: b64EncodeUnicode(newContent),
+        sha: getData.sha,
+        branch: BRANCH,
+      }),
+    });
+    if (!putRes.ok) {
+      const err = await putRes.json().catch(() => ({}));
+      throw new Error(err.message || ("Erreur GitHub " + putRes.status));
+    }
+  }
+
+  async function fetchCardsJson() {
+    const res = await fetch(CARDS_RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("cards.json introuvable");
+    return res.json();
   }
 
   function updateLocalCard(id, patch) {
+    // Cache local optimiste (affichage immediat) - la vraie source est cards.json sur GitHub
     const local = loadLocal();
     local[id] = { ...local[id], ...patch };
     saveLocal(local);
@@ -331,13 +357,18 @@
     label.textContent = "Synchro...";
     errEl.style.display = "none";
     try {
-      const res = await fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" });
-      if (!res.ok) throw new Error("prices.json introuvable");
-      const data = await res.json();
+      const [pricesRes, cardsMeta] = await Promise.all([
+        fetch(DATA_URL + "?t=" + Date.now(), { cache: "no-store" }),
+        fetchCardsJson().catch(() => []), // si indisponible, on continue avec prices.json seul
+      ]);
+      if (!pricesRes.ok) throw new Error("prices.json introuvable");
+      const data = await pricesRes.json();
+      const cardsMetaById = Object.fromEntries((cardsMeta || []).map((c) => [c.id, c]));
       const local = loadLocal();
       const merged = {};
-      cards.forEach((c) => (merged[c.id] = c));
+      cards.forEach((c) => (merged[c.id] = c)); // garde les cartes locales pas encore dans prices.json
       (data.cards || []).forEach((remote) => {
+        const meta = cardsMetaById[remote.id] || {};
         const localExtra = local[remote.id] || {};
         const prevLocal = merged[remote.id] || {};
         merged[remote.id] = {
@@ -350,9 +381,11 @@
           price: remote.price,
           sources: remote.sources || {},
           history: remote.history || [],
-          purchasePrice: localExtra.purchasePrice ?? prevLocal.purchasePrice ?? null,
-          sold: localExtra.sold ?? prevLocal.sold ?? false,
-          salePrice: localExtra.salePrice ?? prevLocal.salePrice ?? null,
+          // cards.json (GitHub) est la source de verite pour ces champs ;
+          // le cache local ne sert que de repli hors-ligne.
+          purchasePrice: meta.purchasePrice ?? localExtra.purchasePrice ?? prevLocal.purchasePrice ?? null,
+          sold: meta.sold ?? localExtra.sold ?? prevLocal.sold ?? false,
+          salePrice: meta.salePrice ?? localExtra.salePrice ?? prevLocal.salePrice ?? null,
         };
       });
       cards = Object.values(merged);
@@ -608,20 +641,30 @@
       el.addEventListener("click", (e) => e.stopPropagation());
     });
     document.querySelectorAll("[data-save]").forEach((el) => {
-      el.addEventListener("click", (e) => {
+      el.addEventListener("click", async (e) => {
         e.stopPropagation();
         const id = el.dataset.save;
         const panel = el.closest(".expand-panel");
         const purchasePrice = panel.querySelector('[data-field="purchasePrice"]').value;
         const sold = panel.querySelector('[data-field="sold"]').checked;
         const salePrice = panel.querySelector('[data-field="salePrice"]')?.value ?? "";
-        updateLocalCard(id, {
+        const patch = {
           purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : null,
           sold,
           salePrice: salePrice !== "" ? parseFloat(salePrice) : null,
-        });
-        editingId = null;
-        render();
+        };
+        updateLocalCard(id, patch); // affichage immediat
+        el.disabled = true;
+        el.textContent = "...";
+        try {
+          await updateCardInGitHub(id, patch); // source de verite, visible sur tous les appareils
+          editingId = null;
+          render();
+        } catch (err) {
+          el.disabled = false;
+          el.textContent = "Valider";
+          alert("Enregistrement sur GitHub impossible : " + err.message + "\nLa valeur reste affichee ici mais ne sera pas visible sur tes autres appareils tant que ce n'est pas corrige.");
+        }
       });
     });
   }
@@ -715,6 +758,8 @@
       card_number: cardNumber || undefined,
       language, grade, qty,
       pricecharting_url: pricechartingUrl || undefined,
+      purchasePrice: purchasePrice !== "" ? parseFloat(purchasePrice) : undefined,
+      sold: false,
     };
 
     const btn = document.getElementById("formSave");
