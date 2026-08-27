@@ -45,7 +45,10 @@
     "language": "JP",
     "grade": "PSA 10",
     "qty": 1,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-promo/monkeydluffy-serial-eb04-061"
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-promo/monkeydluffy-serial-eb04-061",
+    "purchasePrice": 13144,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787787575900",
