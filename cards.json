@@ -123,7 +123,10 @@
     "language": "EN",
     "grade": "ungraded",
     "qty": 1,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-promo/yamato-serial-eb02-006"
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-promo/yamato-serial-eb02-006",
+    "purchasePrice": 2358,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787828212113",
