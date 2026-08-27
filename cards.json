@@ -105,7 +105,10 @@
     "language": "JP",
     "grade": "PSA 10",
     "qty": 1,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-promo/boa-hancock-flagship-battle-op16-032"
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-promo/boa-hancock-flagship-battle-op16-032",
+    "purchasePrice": 3472,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787789151437",
