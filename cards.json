@@ -24,7 +24,10 @@
     "language": "JP",
     "grade": "PSA 10",
     "qty": 2,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-romance-dawn/nami-manga-op01-016"
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-romance-dawn/nami-manga-op01-016",
+    "purchasePrice": 802,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787786874480",
