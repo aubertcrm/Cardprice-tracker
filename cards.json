@@ -84,7 +84,10 @@
     "language": "JP",
     "grade": "PSA 8",
     "qty": 1,
-    "pricecharting_url": "https://www.pricecharting.com/game/pokemon-japanese-promo/pikachu-mega-tokyo%27s-98xy-p#completed-auctions-new"
+    "pricecharting_url": "https://www.pricecharting.com/game/pokemon-japanese-promo/pikachu-mega-tokyo%27s-98xy-p#completed-auctions-new",
+    "purchasePrice": 480,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787788051831",
