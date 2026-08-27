@@ -118,5 +118,17 @@
     "grade": "ungraded",
     "qty": 1,
     "pricecharting_url": "https://www.pricecharting.com/game/one-piece-promo/yamato-serial-eb02-006"
+  },
+  {
+    "id": "c1787828212113",
+    "game": "onepiece",
+    "name": "Shanks [2nd Anniversary] OP09-001",
+    "set": "One Piece Japanese Emperors In The New World",
+    "year": 2025,
+    "card_number": "OP09-001",
+    "language": "JP",
+    "grade": "PSA 10",
+    "qty": 1,
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-emperors-in-the-new-world/shanks-2nd-anniversary-op09-001"
   }
 ]
