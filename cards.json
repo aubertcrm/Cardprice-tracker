@@ -33,7 +33,10 @@
     "language": "JP",
     "grade": "PSA 10",
     "qty": 2,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-wings-of-the-captain/roronoa-zoro-alternate-art-manga-op06-118"
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-wings-of-the-captain/roronoa-zoro-alternate-art-manga-op06-118",
+    "purchasePrice": 2106,
+    "sold": false,
+    "salePrice": null
   },
   {
     "id": "c1787787163560",
