@@ -106,5 +106,17 @@
     "grade": "PSA 10",
     "qty": 1,
     "pricecharting_url": "https://www.pricecharting.com/game/one-piece-starter-deck-1-straw-hat-crew/roronoa-zoro-treasure-cup-st01-013"
+  },
+  {
+    "id": "c1787828097531",
+    "game": "onepiece",
+    "name": "Yamato [Serial] EB02-006",
+    "set": "One Piece Promo",
+    "year": 2026,
+    "card_number": "EB02-006",
+    "language": "EN",
+    "grade": "ungraded",
+    "qty": 1,
+    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-promo/yamato-serial-eb02-006"
   }
 ]
