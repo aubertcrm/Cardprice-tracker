@@ -3,9 +3,7 @@ Met a jour la cote de chaque carte listee dans cards.json en moyennant
 plusieurs sources.
 
 Sources interrogees :
-- PriceCharting (catalogue par ID de produit - le plus fiable, source payante).
-  Identifiable par pricecharting_id (exact) ou pricecharting_url (URL de la
-  page produit, resolue automatiquement en comparant nom, set et numero).
+- PriceCharting (catalogue par ID de produit - le plus fiable, source payante)
 - eBay, ventes reussies (scraping de la page "Sold Items")
 - eBay, annonces actives (Browse API officielle, cle gratuite)
 - Mercari (scraping best-effort)
@@ -13,12 +11,11 @@ Sources interrogees :
 - Cardrush (scraping best-effort)
 - Yuyu-tei (scraping best-effort)
 
-Les sources eBay/Mercari/SNKR DUNK/Cardrush/Yuyu-tei ne servent que de repli
-pour les cartes qui n'ont ni pricecharting_id ni pricecharting_url.
+Toutes ces sources sauf eBay/Browse API et PriceCharting n'ont pas d'API
+publique : le scraping est fragile par nature. Chaque source echoue
+silencieusement (elle est juste ignoree) sans faire planter le script.
 
-Tous les prix sont convertis en EUR. Un ajustement global (GLOBAL_PRICE_ADJUSTMENT)
-est applique a toutes les cartes, sauf si une carte definit son propre
-"price_adjustment" dans cards.json.
+Tous les prix sont convertis en EUR avant d'etre moyennes.
 
 Variables d'environnement attendues (secrets GitHub Actions), optionnelles :
 - EBAY_CLIENT_ID
@@ -42,7 +39,9 @@ HISTORY_DAYS = 90
 FALLBACK_USD_TO_EUR = 0.92
 FALLBACK_JPY_TO_EUR = 0.0060
 
-# Ajustement global applique a toutes les cartes (1.30 = +30%).
+# Ajustement global applique a toutes les cartes (1.30 = +30%). Change cette
+# valeur pour ajuster le calcul global. Une carte peut avoir son propre
+# "price_adjustment" dans cards.json pour remplacer ce reglage global.
 GLOBAL_PRICE_ADJUSTMENT = 1.30
 
 EBAY_CLIENT_ID = (os.environ.get("EBAY_CLIENT_ID") or "").strip()
@@ -87,8 +86,10 @@ def to_eur(value, currency, rates):
 
 
 def trimmed_median(values):
-    """Retire le quart le plus bas et le quart le plus haut avant de calculer
-    la mediane, pour limiter l'impact des mauvaises correspondances."""
+    """Trie les valeurs et retire le quart le plus bas et le quart le plus haut
+    avant de calculer la mediane, pour limiter l'impact des mauvaises
+    correspondances (carte differente, reproduction, lot...).
+    """
     if not values:
         return None
     values = sorted(values)
@@ -100,12 +101,13 @@ def trimmed_median(values):
 
 
 # ---------------------------------------------------------------------------
-# PriceCharting
+# PriceCharting (catalogue par ID de produit - le plus fiable, source payante)
 # ---------------------------------------------------------------------------
 
 PRICECHARTING_GRADE_FIELDS = {
     "psa 10": "manual-only-price",
     "psa 9": "graded-price",
+    "psa 9.5": "box-only-price",
     "psa 8.5": "new-price",
     "psa 8": "new-price",
     "psa 7.5": "cib-price",
@@ -120,8 +122,10 @@ PRICECHARTING_GRADE_FIELDS = {
     "bgs 10 black": "condition-20-price",
     "bgs 9.5": "box-only-price",
     "cgc 10": "condition-17-price",
+    "cgc 9.5": "box-only-price",
     "cgc 10 pristine": "condition-19-price",
     "sgc 10": "condition-18-price",
+    "sgc 9.5": "box-only-price",
     "tag 10": "condition-21-price",
     "ace 10": "condition-22-price",
 }
@@ -154,9 +158,11 @@ def resolve_pricecharting_id_from_url(url):
             timeout=15,
         )
         if resp.status_code != 200:
+            print(f"Debug PriceCharting: recherche produit status={resp.status_code} pour '{query}'")
             return None
         data = resp.json()
         if data.get("status") != "success":
+            print(f"Debug PriceCharting: recherche produit echouee ({data.get('error-message')}) pour '{query}'")
             return None
 
         products = data.get("products", [])
@@ -233,10 +239,18 @@ def price_from_pricecharting(card, rates):
 
 
 # ---------------------------------------------------------------------------
-# eBay
+# eBay - ventes reussies (scraping best-effort)
 # ---------------------------------------------------------------------------
 
 def build_query(card):
+    """Construit une requete eBay precise a partir des champs de la carte.
+
+    Si le champ "custom_query" est renseigne, il est utilise tel quel (copie
+    depuis le titre exact d'une annonce eBay reelle) - le plus fiable pour les
+    cartes rares avec plusieurs variantes proches (ex: differentes versions
+    "Manga" partageant le meme numero). Sinon, la requete est construite
+    automatiquement a partir des champs structures (nom/set/annee/numero...).
+    """
     if card.get("custom_query"):
         base = card["custom_query"]
     else:
@@ -287,6 +301,10 @@ def price_from_ebay_sold(card, rates):
         print(f"Erreur eBay (ventes) pour '{query}': {e}")
         return []
 
+
+# ---------------------------------------------------------------------------
+# eBay - annonces actives (Browse API, source de secours)
+# ---------------------------------------------------------------------------
 
 def get_ebay_token():
     if not EBAY_CLIENT_ID or not EBAY_CLIENT_SECRET:
@@ -341,7 +359,7 @@ def price_from_ebay_active(token, card, rates):
 
 
 # ---------------------------------------------------------------------------
-# Mercari
+# Mercari (best-effort)
 # ---------------------------------------------------------------------------
 
 def price_from_mercari(query, rates):
@@ -368,7 +386,7 @@ def price_from_mercari(query, rates):
 
 
 # ---------------------------------------------------------------------------
-# SNKR DUNK
+# SNKR DUNK (best-effort)
 # ---------------------------------------------------------------------------
 
 def price_from_snkrdunk(query, rates):
@@ -395,7 +413,7 @@ def price_from_snkrdunk(query, rates):
 
 
 # ---------------------------------------------------------------------------
-# Cardrush
+# Cardrush (best-effort)
 # ---------------------------------------------------------------------------
 
 def price_from_cardrush(query, rates):
@@ -426,7 +444,7 @@ def price_from_cardrush(query, rates):
 
 
 # ---------------------------------------------------------------------------
-# Yuyu-tei
+# Yuyu-tei (best-effort)
 # ---------------------------------------------------------------------------
 
 def price_from_yuyutei(query, rates):
@@ -461,6 +479,10 @@ def price_from_yuyutei(query, rates):
 # ---------------------------------------------------------------------------
 
 def compute_price(token, rates, card):
+    # Si PriceCharting a un resultat, on l'utilise seul (source la plus
+    # fiable puisqu'on paye pour un catalogue precis par variante). Les
+    # autres sources ne servent que de repli pour les cartes qui n'ont pas
+    # encore de pricecharting_id renseigne.
     pc = price_from_pricecharting(card, rates)
     if pc:
         sources = {"pricecharting": pc[0]}
