@@ -208,5 +208,19 @@
     "purchasePrice": 2234,
     "sold": false,
     "salePrice": null
+  },
+  {
+    "id": "c1788262765687",
+    "game": "pokemon",
+    "name": "Umbreon [Nagaba] #67/SV-P",
+    "set": "Pokemon Japanese Promo",
+    "year": 2023,
+    "card_number": "67/SV-P",
+    "language": "JP",
+    "grade": "PSA 10",
+    "qty": 1,
+    "pricecharting_url": "https://www.pricecharting.com/game/pokemon-japanese-promo/umbreon-nagaba-67sv-p?q=umbreon++67%2Fsv-p",
+    "purchasePrice": 196,
+    "sold": false
   }
 ]
