@@ -224,20 +224,6 @@
     "sold": false
   },
   {
-    "id": "c1788262985327",
-    "game": "onepiece",
-    "name": "Monkey.D.Luffy [Red Manga] OP13-118",
-    "set": "One Piece Japanese Carrying On His Will",
-    "year": 2025,
-    "card_number": "OP13-118",
-    "language": "JP",
-    "grade": "PSA 10",
-    "qty": 1,
-    "pricecharting_url": "https://www.pricecharting.com/game/one-piece-japanese-carrying-on-his-will/monkeydluffy-red-manga-op13-118",
-    "purchasePrice": 12000,
-    "sold": false
-  },
-  {
     "id": "c1788264092342",
     "game": "pokemon",
     "name": "Mimikyu #289/SM-P",
@@ -250,5 +236,5 @@
     "pricecharting_url": "https://www.pricecharting.com/game/pokemon-japanese-promo/mimikyu-289sm-p?q=mimikyu+289%2Fsm-p#full-prices",
     "purchasePrice": 4034,
     "sold": false
-  }
+  },
 ]
