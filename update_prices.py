@@ -241,6 +241,9 @@ def price_from_pricecharting(card, rates):
 
         grade = (card.get("grade") or "").strip().lower()
         field = PRICECHARTING_GRADE_FIELDS.get(grade, "loose-price")
+        price_fields = {k: v for k, v in data.items() if "price" in k.lower() and v is not None}
+        print(f"Debug PriceCharting: tous les prix bruts (en cents) pour '{card.get('name')}': {price_fields}")
+        print(f"Debug PriceCharting: grade='{grade}' -> champ utilise='{field}'")
         cents = data.get(field)
         if cents is None:
             print(f"Debug PriceCharting: pas de valeur pour le champ '{field}'")
