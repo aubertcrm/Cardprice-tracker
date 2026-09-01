@@ -240,7 +240,20 @@ def price_from_pricecharting(card, rates):
             return []
 
         grade = (card.get("grade") or "").strip().lower()
-        field = PRICECHARTING_GRADE_FIELDS.get(grade, "loose-price")
+        field = PRICECHARTING_GRADE_FIELDS.get(grade)
+        if field is None:
+            # Repli intelligent : le palier "9.5" a une seule colonne commune
+            # a toutes les societes de gradation sur PriceCharting, donc meme
+            # un grade ecrit simplement "Grade 9.5" (sans preciser PSA/BGS/CGC)
+            # doit y correspondre.
+            if "9.5" in grade:
+                field = "box-only-price"
+            elif re.search(r"\b10\b", grade) and "psa" not in grade and "bgs" not in grade and "cgc" not in grade and "sgc" not in grade:
+                # Grade 10 generique (societe non precisee) : le plus proche
+                # d'un consensus reste le prix PSA 10 (le plus documente).
+                field = "manual-only-price"
+            else:
+                field = "loose-price"
         price_fields = {k: v for k, v in data.items() if "price" in k.lower() and v is not None}
         print(f"Debug PriceCharting: tous les prix bruts (en cents) pour '{card.get('name')}': {price_fields}")
         print(f"Debug PriceCharting: grade='{grade}' -> champ utilise='{field}'")
