@@ -27,6 +27,7 @@ import json
 import os
 import re
 import statistics
+import time
 from datetime import datetime, timezone
 from urllib.parse import urlparse, unquote
 
@@ -139,6 +140,22 @@ def _extract_numbers(text):
     return set(re.findall(r"\d{2,}", text))
 
 
+def pricecharting_get(url, params):
+    """Requete PriceCharting avec pause anti-rafale et nouvelles tentatives
+    en cas de limite de debit (429) - evite les echecs vers la fin d'une
+    longue liste de cartes.
+    """
+    for attempt in range(4):
+        resp = requests.get(url, params=params, timeout=15)
+        if resp.status_code != 429:
+            time.sleep(0.4)  # pause entre chaque appel, meme reussi
+            return resp
+        wait = 3 * (attempt + 1)
+        print(f"Debug PriceCharting: 429 (limite de debit), pause {wait}s avant nouvelle tentative")
+        time.sleep(wait)
+    return resp
+
+
 def resolve_pricecharting_id_from_url(url):
     """A partir de l'URL d'une page produit PriceCharting (celle qu'on visite
     dans le navigateur), retrouve automatiquement l'ID du produit via une
@@ -152,10 +169,9 @@ def resolve_pricecharting_id_from_url(url):
         console_slug, product_slug = unquote(console_slug), unquote(product_slug)
         query = product_slug.replace("-", " ")
 
-        resp = requests.get(
+        resp = pricecharting_get(
             "https://www.pricecharting.com/api/products",
-            params={"t": PRICECHARTING_TOKEN, "q": query},
-            timeout=15,
+            {"t": PRICECHARTING_TOKEN, "q": query},
         )
         if resp.status_code != 200:
             print(f"Debug PriceCharting: recherche produit status={resp.status_code} pour '{query}'")
@@ -211,10 +227,9 @@ def price_from_pricecharting(card, rates):
     if not product_id:
         return []
     try:
-        resp = requests.get(
+        resp = pricecharting_get(
             "https://www.pricecharting.com/api/product",
-            params={"t": PRICECHARTING_TOKEN, "id": product_id},
-            timeout=15,
+            {"t": PRICECHARTING_TOKEN, "id": product_id},
         )
         print(f"Debug PriceCharting: status={resp.status_code}")
         if resp.status_code != 200:
