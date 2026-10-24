@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T11:05:11.393237+00:00",
+  "updated_at": "2026-10-24T10:21:15.079717+00:00",
   "cards": [
     {
       "id": "c1787785650576",
@@ -8,9 +8,9 @@
       "set": "One Piece Japanese Carrying On His Will",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 2830.88,
+      "price": 2833.92,
       "sources": {
-        "pricecharting": 2177.6,
+        "pricecharting": 2179.94,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -325,6 +325,10 @@
         {
           "date": "2026-10-23",
           "price": 2830.88
+        },
+        {
+          "date": "2026-10-24",
+          "price": 2833.92
         }
       ]
     },
@@ -335,9 +339,9 @@
       "set": "One Piece Japanese Romance Dawn",
       "grade": "PSA 10",
       "qty": 2,
-      "price": 1078.6,
+      "price": 1079.42,
       "sources": {
-        "pricecharting": 829.69,
+        "pricecharting": 830.32,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -644,6 +648,10 @@
         {
           "date": "2026-10-23",
           "price": 1078.6
+        },
+        {
+          "date": "2026-10-24",
+          "price": 1079.42
         }
       ]
     },
@@ -654,9 +662,9 @@
       "set": "One Piece Japanese Wings Of The Captain One Piece Cards",
       "grade": "PSA 10",
       "qty": 2,
-      "price": 2593.05,
+      "price": 2595.81,
       "sources": {
-        "pricecharting": 1994.65,
+        "pricecharting": 1996.78,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -959,6 +967,10 @@
         {
           "date": "2026-10-23",
           "price": 2593.05
+        },
+        {
+          "date": "2026-10-24",
+          "price": 2595.81
         }
       ]
     },
@@ -969,9 +981,9 @@
       "set": "One Piece Japanese Promo",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 11701.05,
+      "price": 11713.6,
       "sources": {
-        "pricecharting": 9000.81,
+        "pricecharting": 9010.46,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -1270,6 +1282,10 @@
         {
           "date": "2026-10-23",
           "price": 11701.05
+        },
+        {
+          "date": "2026-10-24",
+          "price": 11713.6
         }
       ]
     },
@@ -1280,9 +1296,9 @@
       "set": "One Piece Japanese Romance Dawn",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 2784.47,
+      "price": 2787.46,
       "sources": {
-        "pricecharting": 2141.9,
+        "pricecharting": 2144.2,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -1577,6 +1593,10 @@
         {
           "date": "2026-10-23",
           "price": 2784.47
+        },
+        {
+          "date": "2026-10-24",
+          "price": 2787.46
         }
       ]
     },
@@ -1587,9 +1607,9 @@
       "set": "Pokemon Japanese Promo",
       "grade": "PSA 8",
       "qty": 1,
-      "price": 947.71,
+      "price": 948.73,
       "sources": {
-        "pricecharting": 729.01,
+        "pricecharting": 729.79,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -1884,6 +1904,10 @@
         {
           "date": "2026-10-23",
           "price": 947.71
+        },
+        {
+          "date": "2026-10-24",
+          "price": 948.73
         }
       ]
     },
@@ -1894,9 +1918,9 @@
       "set": "One Piece Japanese Emperors In The New World",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 1656.97,
+      "price": 1468.83,
       "sources": {
-        "pricecharting": 1274.59,
+        "pricecharting": 1129.87,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2191,6 +2215,10 @@
         {
           "date": "2026-10-23",
           "price": 1656.97
+        },
+        {
+          "date": "2026-10-24",
+          "price": 1468.83
         }
       ]
     },
@@ -2201,9 +2229,9 @@
       "set": "One Piece Japanese Promo",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 2465.42,
+      "price": 2526.13,
       "sources": {
-        "pricecharting": 1896.48,
+        "pricecharting": 1943.18,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2490,6 +2518,10 @@
         {
           "date": "2026-10-23",
           "price": 2465.42
+        },
+        {
+          "date": "2026-10-24",
+          "price": 2526.13
         }
       ]
     },
@@ -2500,9 +2532,9 @@
       "set": "One Piece Starter Deck 1: Straw Hat Crew",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 4121.38,
+      "price": 4125.8,
       "sources": {
-        "pricecharting": 3170.29,
+        "pricecharting": 3173.69,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2789,6 +2821,10 @@
         {
           "date": "2026-10-23",
           "price": 4121.38
+        },
+        {
+          "date": "2026-10-24",
+          "price": 4125.8
         }
       ]
     },
@@ -2799,9 +2835,9 @@
       "set": "One Piece Promo",
       "grade": "ungraded",
       "qty": 1,
-      "price": 4640.79,
+      "price": 4645.76,
       "sources": {
-        "pricecharting": 3569.84,
+        "pricecharting": 3573.66,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3084,6 +3120,10 @@
         {
           "date": "2026-10-23",
           "price": 4640.79
+        },
+        {
+          "date": "2026-10-24",
+          "price": 4645.76
         }
       ]
     },
@@ -3094,9 +3134,9 @@
       "set": "One Piece Japanese Emperors In The New World",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 188.34,
+      "price": 182.95,
       "sources": {
-        "pricecharting": 144.88,
+        "pricecharting": 140.73,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3379,6 +3419,10 @@
         {
           "date": "2026-10-23",
           "price": 188.34
+        },
+        {
+          "date": "2026-10-24",
+          "price": 182.95
         }
       ]
     },
@@ -3389,9 +3433,9 @@
       "set": "One Piece Japanese Extra Booster Heroines Edition",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 928.16,
+      "price": 1044.13,
       "sources": {
-        "pricecharting": 713.97,
+        "pricecharting": 803.18,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3674,6 +3718,10 @@
         {
           "date": "2026-10-23",
           "price": 928.16
+        },
+        {
+          "date": "2026-10-24",
+          "price": 1044.13
         }
       ]
     },
@@ -3684,9 +3732,9 @@
       "set": "One Piece Japanese Starter Deck 30: Luffy & Ace",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 672.89,
+      "price": 673.61,
       "sources": {
-        "pricecharting": 517.61,
+        "pricecharting": 518.16,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3969,6 +4017,10 @@
         {
           "date": "2026-10-23",
           "price": 672.89
+        },
+        {
+          "date": "2026-10-24",
+          "price": 673.61
         }
       ]
     },
@@ -3979,9 +4031,9 @@
       "set": "One Piece Ultra Deck: The Three Captains",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 3828.64,
+      "price": 3832.74,
       "sources": {
-        "pricecharting": 2945.11,
+        "pricecharting": 2948.26,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -4264,6 +4316,10 @@
         {
           "date": "2026-10-23",
           "price": 3828.64
+        },
+        {
+          "date": "2026-10-24",
+          "price": 3832.74
         }
       ]
     },
@@ -4274,9 +4330,9 @@
       "set": "Pokemon Japanese Promo",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 324.86,
+      "price": 325.21,
       "sources": {
-        "pricecharting": 249.89,
+        "pricecharting": 250.16,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -4531,6 +4587,10 @@
         {
           "date": "2026-10-23",
           "price": 324.86
+        },
+        {
+          "date": "2026-10-24",
+          "price": 325.21
         }
       ]
     },
@@ -4541,9 +4601,9 @@
       "set": "Pokemon Japanese Promo",
       "grade": "Grade 9.5",
       "qty": 1,
-      "price": 11506.01,
+      "price": 11516.86,
       "sources": {
-        "pricecharting": 8850.78,
+        "pricecharting": 8859.12,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -4778,6 +4838,10 @@
         {
           "date": "2026-10-23",
           "price": 11506.01
+        },
+        {
+          "date": "2026-10-24",
+          "price": 11516.86
         }
       ]
     }
