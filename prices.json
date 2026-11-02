@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T12:43:52.134165+00:00",
+  "updated_at": "2026-11-02T14:53:10.403507+00:00",
   "cards": [
     {
       "id": "c1787785650576",
@@ -361,6 +361,10 @@
         {
           "date": "2026-11-01",
           "price": 3346.58
+        },
+        {
+          "date": "2026-11-02",
+          "price": 3346.58
         }
       ]
     },
@@ -371,9 +375,9 @@
       "set": "One Piece Japanese Romance Dawn",
       "grade": "PSA 10",
       "qty": 2,
-      "price": 1081.63,
+      "price": 1134.17,
       "sources": {
-        "pricecharting": 832.02,
+        "pricecharting": 872.44,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -716,6 +720,10 @@
         {
           "date": "2026-11-01",
           "price": 1081.63
+        },
+        {
+          "date": "2026-11-02",
+          "price": 1134.17
         }
       ]
     },
@@ -1067,6 +1075,10 @@
         {
           "date": "2026-11-01",
           "price": 2600.7
+        },
+        {
+          "date": "2026-11-02",
+          "price": 2600.7
         }
       ]
     },
@@ -1077,9 +1089,9 @@
       "set": "One Piece Japanese Promo",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 12922.62,
+      "price": 370.25,
       "sources": {
-        "pricecharting": 9940.48,
+        "ebay_active": 284.81,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -1414,6 +1426,10 @@
         {
           "date": "2026-11-01",
           "price": 12922.62
+        },
+        {
+          "date": "2026-11-02",
+          "price": 370.25
         }
       ]
     },
@@ -1757,6 +1773,10 @@
         {
           "date": "2026-11-01",
           "price": 2792.7
+        },
+        {
+          "date": "2026-11-02",
+          "price": 2792.7
         }
       ]
     },
@@ -1767,9 +1787,9 @@
       "set": "Pokemon Japanese Promo",
       "grade": "PSA 8",
       "qty": 1,
-      "price": 944.66,
+      "price": 634.14,
       "sources": {
-        "pricecharting": 726.66,
+        "ebay_active": 487.8,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2100,6 +2120,10 @@
         {
           "date": "2026-11-01",
           "price": 944.66
+        },
+        {
+          "date": "2026-11-02",
+          "price": 634.14
         }
       ]
     },
@@ -2110,9 +2134,9 @@
       "set": "One Piece Japanese Emperors In The New World",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 1381.81,
+      "price": 1556.14,
       "sources": {
-        "pricecharting": 1062.93,
+        "ebay_active": 1197.03,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2443,6 +2467,10 @@
         {
           "date": "2026-11-01",
           "price": 1381.81
+        },
+        {
+          "date": "2026-11-02",
+          "price": 1556.14
         }
       ]
     },
@@ -2453,9 +2481,9 @@
       "set": "One Piece Japanese Promo",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 2559.97,
+      "price": 238.54,
       "sources": {
-        "pricecharting": 1969.21,
+        "ebay_active": 183.49,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -2778,6 +2806,10 @@
         {
           "date": "2026-11-01",
           "price": 2559.97
+        },
+        {
+          "date": "2026-11-02",
+          "price": 238.54
         }
       ]
     },
@@ -3113,6 +3145,10 @@
         {
           "date": "2026-11-01",
           "price": 4133.55
+        },
+        {
+          "date": "2026-11-02",
+          "price": 4133.55
         }
       ]
     },
@@ -3123,9 +3159,9 @@
       "set": "One Piece Promo",
       "grade": "ungraded",
       "qty": 1,
-      "price": 4305.4,
+      "price": 4109.65,
       "sources": {
-        "pricecharting": 3311.85,
+        "pricecharting": 3161.27,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3444,6 +3480,10 @@
         {
           "date": "2026-11-01",
           "price": 4305.4
+        },
+        {
+          "date": "2026-11-02",
+          "price": 4109.65
         }
       ]
     },
@@ -3454,9 +3494,9 @@
       "set": "One Piece Japanese Emperors In The New World",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 191.41,
+      "price": 187.06,
       "sources": {
-        "pricecharting": 147.24,
+        "pricecharting": 143.89,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -3775,6 +3815,10 @@
         {
           "date": "2026-11-01",
           "price": 191.41
+        },
+        {
+          "date": "2026-11-02",
+          "price": 187.06
         }
       ]
     },
@@ -3785,9 +3829,9 @@
       "set": "One Piece Japanese Extra Booster Heroines Edition",
       "grade": "PSA 10",
       "qty": 1,
-      "price": 1046.1,
+      "price": 291.49,
       "sources": {
-        "pricecharting": 804.69,
+        "ebay_active": 224.22,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -4106,6 +4150,10 @@
         {
           "date": "2026-11-01",
           "price": 1046.1
+        },
+        {
+          "date": "2026-11-02",
+          "price": 291.49
         }
       ]
     },
@@ -4436,6 +4484,10 @@
         },
         {
           "date": "2026-11-01",
+          "price": 674.88
+        },
+        {
+          "date": "2026-11-02",
           "price": 674.88
         }
       ]
@@ -4768,6 +4820,10 @@
         {
           "date": "2026-11-01",
           "price": 3408.25
+        },
+        {
+          "date": "2026-11-02",
+          "price": 3408.25
         }
       ]
     },
@@ -5071,6 +5127,10 @@
         {
           "date": "2026-11-01",
           "price": 318.41
+        },
+        {
+          "date": "2026-11-02",
+          "price": 318.41
         }
       ]
     },
@@ -5081,9 +5141,9 @@
       "set": "Pokemon Japanese Promo",
       "grade": "Grade 9.5",
       "qty": 1,
-      "price": 11546.07,
+      "price": 138.46,
       "sources": {
-        "pricecharting": 8881.59,
+        "ebay_active": 106.51,
         "_adjustment_applied": 1.3
       },
       "history": [
@@ -5354,6 +5414,10 @@
         {
           "date": "2026-11-01",
           "price": 11546.07
+        },
+        {
+          "date": "2026-11-02",
+          "price": 138.46
         }
       ]
     }
